@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, send_from_directory
 import random
 import os
+from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
 
@@ -10,14 +11,18 @@ def index():
 
 @app.route('/api/execute-trade', methods=['POST'])
 def execute_trade():
-    # Lógica de Neura Trade: Profit entre 2% y 4.5% menos $5 de comisión
-    profit_pct = random.uniform(0.02, 0.045)
-    commission = 5.00
+    pares = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT"]
+    par_elegido = random.choice(pares)
+    profit_pct = random.uniform(0.015, 0.042)
+    comision = 5.00
+    
     return jsonify({
         "status": "success",
+        "par": par_elegido,
         "profit_pct": round(profit_pct * 100, 2),
-        "commission": commission,
-        "server_time": "Render Cloud Active"
+        "comision": comision,
+        "timestamp": datetime.now().strftime("%H:%M:%S"),
+        "id_operacion": f"TX-{random.randint(1000, 9999)}"
     })
 
 if __name__ == "__main__":
