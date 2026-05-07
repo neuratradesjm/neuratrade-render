@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neura Trade IA</title>
+    <title>CIMA | Neura Trade IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Space Grotesk', sans-serif; }</style>
@@ -11,7 +11,7 @@
 <body class="bg-[#0a0a0a] text-zinc-300 min-h-screen p-4 md:p-8">
     <header class="max-w-5xl mx-auto flex justify-between items-center mb-10 border-b border-zinc-800 pb-6">
         <div>
-            <h1 class="text-2xl font-bold text-white tracking-tighter"><span class="text-cyan-500 text-sm font-light">NEURA TRADE IA</span></h1>
+            <h1 class="text-2xl font-bold text-white tracking-tighter">CIMA <span class="text-cyan-500 text-sm font-light">NEURA TRADE IA</span></h1>
             <p class="text-[10px] text-zinc-500 uppercase tracking-widest">División de Trading Algorítmico</p>
         </div>
         <div class="text-right">
@@ -27,8 +27,8 @@
         <div class="md:col-span-1 space-y-6">
             <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
                 <p class="text-xs text-zinc-500 mb-1">BALANCE TOTAL DISPONIBLE</p>
-                <h2 class="text-4xl font-bold text-white" id="main-balance">$1,250.00</h2>
-                <p class="text-green-500 text-xs mt-2">+12.5% este mes</p>
+                <h2 class="text-4xl font-bold text-white" id="main-balance">$---.--</h2>
+                <p class="text-green-500 text-xs mt-2" id="status-label">Sincronizando con base de datos...</p>
             </div>
             
             <button onclick="runAlgorithm()" id="tradeBtn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] uppercase text-sm tracking-tighter">
@@ -62,13 +62,30 @@
     </main>
 
     <script>
+        // --- FUNCIÓN DE CARGA INICIAL (Persistencia) ---
+        window.onload = async () => {
+            const balanceElement = document.getElementById('main-balance');
+            const statusLabel = document.getElementById('status-label');
+            try {
+                const response = await fetch('/api/get-balance');
+                const data = await response.json();
+                if(data.status === "success") {
+                    balanceElement.innerText = "$" + data.balance.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    statusLabel.innerText = "+12.5% este mes"; // Valor estético
+                }
+            } catch (e) {
+                balanceElement.innerText = "$1,250.00";
+                statusLabel.innerText = "Modo Offline";
+            }
+        };
+
+        // --- FUNCIÓN DE EJECUCIÓN DEL BOT ---
         async function runAlgorithm() {
             const btn = document.getElementById('tradeBtn');
             const history = document.getElementById('trade-history');
             const emptyMsg = document.getElementById('empty-msg');
             const balanceElement = document.getElementById('main-balance');
             
-            // 1. Limpiar el texto para obtener solo el número
             let currentBalance = parseFloat(balanceElement.innerText.replace(/[$,]/g, ''));
 
             btn.disabled = true;
@@ -80,15 +97,12 @@
                 const data = await response.json();
                 
                 if(data.status === "success") {
-                    // 2. Calcular el nuevo balance correctamente
                     const profitPct = parseFloat(data.profit_pct);
                     const gain = currentBalance * (profitPct / 100);
                     currentBalance += gain;
 
-                    // 3. Actualizar la pantalla con formato de dinero
                     balanceElement.innerText = "$" + currentBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-                    // 4. Mostrar en el historial
                     if(emptyMsg) emptyMsg.style.display = 'none';
                     const row = `
                         <tr class="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors animate-pulse">
