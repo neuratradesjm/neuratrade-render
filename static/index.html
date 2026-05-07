@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NEURA TRADE AI | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#050505] text-white flex items-center justify-center min-h-screen">
+    <div class="p-10 bg-zinc-900 border-t-4 border-cyan-500 rounded-3xl shadow-2xl text-center max-w-sm">
+        <h1 class="text-3xl font-black italic mb-2">NEURA <span class="text-cyan-400">TRADE</span></h1>
+        <p class="text-[10px] tracking-[0.3em] text-zinc-500 mb-8 uppercase">Cima Group System</p>
+
+        <button onclick="ejecutar()" id="botBtn" class="w-full bg-cyan-400 text-black font-bold py-4 rounded-xl hover:shadow-[0_0_15px_#22d3ee] transition-all uppercase text-sm">Ejecutar Bot Autónomo</button>
+
+        <div id="status" class="mt-8 space-y-2 hidden">
+            <p id="p-res" class="text-green-400 font-bold text-xl"></p>
+            <p id="c-res" class="text-zinc-600 text-[10px]"></p>
+        </div>
+    </div>
+
+    <script>
+        async function ejecutar() {
+            const btn = document.getElementById('botBtn');
+            btn.innerText = "CONECTANDO A RENDER...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/execute-trade', { method: 'POST' });
+                const data = await res.json();
+                document.getElementById('status').classList.remove('hidden');
+                document.getElementById('p-res').innerText = "+" + data.profit_pct + "% Profit";
+                document.getElementById('c-res').innerText = "COMISIÓN APLICADA: $" + data.commission;
+            } catch (e) {
+                alert("Error de conexión con el motor");
+            }
+
+            btn.innerText = "Ejecutar Bot Autónomo";
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
