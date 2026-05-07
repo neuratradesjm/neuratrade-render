@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 
 app = Flask(__name__, static_folder='static')
 
-# Configuración de la Base de Datos Neura Trade IA
 def get_db_connection():
     db_url = os.environ.get('DATABASE_URL')
     result = urlparse(db_url)
@@ -23,6 +22,22 @@ def get_db_connection():
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/api/get-balance', methods=['GET'])
+def get_balance():
+    balance_inicial = 1250.00
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('SELECT SUM(profit) FROM trades')
+        total_profit = cur.fetchone()[0] or 0
+        cur.close()
+        conn.close()
+        # El balance es el inicial + la suma de los porcentajes ganados (simplificado)
+        balance_actual = balance_inicial + (balance_inicial * (total_profit / 100))
+        return jsonify({"status": "success", "balance": round(balance_actual, 2)})
+    except Exception as e:
+        return jsonify({"status": "error", "balance": balance_inicial})
+
 @app.route('/api/execute-trade', methods=['POST'])
 def execute_trade():
     pares = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT"]
@@ -30,13 +45,10 @@ def execute_trade():
     profit_pct = round(random.uniform(1.5, 4.2), 2)
     id_transaccion = f"TX-{random.randint(1000, 9999)}"
     
-    # Intentar guardar en la base de datos de Cima
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        # Crear tabla si no existe
         cur.execute('CREATE TABLE IF NOT EXISTS trades (id serial PRIMARY KEY, trade_id varchar(20), pair varchar(10), profit float, date timestamp DEFAULT CURRENT_TIMESTAMP);')
-        # Insertar operación
         cur.execute('INSERT INTO trades (trade_id, pair, profit) VALUES (%s, %s, %s)', (id_transaccion, par_elegido, profit_pct))
         conn.commit()
         cur.close()
