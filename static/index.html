@@ -2,40 +2,105 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NEURA TRADE AI | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIMA | Neura Trade AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Space Grotesk', sans-serif; }</style>
 </head>
-<body class="bg-[#050505] text-white flex items-center justify-center min-h-screen">
-    <div class="p-10 bg-zinc-900 border-t-4 border-cyan-500 rounded-3xl shadow-2xl text-center max-w-sm">
-        <h1 class="text-3xl font-black italic mb-2">NEURA <span class="text-cyan-400">TRADE</span></h1>
-        <p class="text-[10px] tracking-[0.3em] text-zinc-500 mb-8 uppercase">Cima Group System</p>
-
-        <button onclick="ejecutar()" id="botBtn" class="w-full bg-cyan-400 text-black font-bold py-4 rounded-xl hover:shadow-[0_0_15px_#22d3ee] transition-all uppercase text-sm">Ejecutar Bot Autónomo</button>
-
-        <div id="status" class="mt-8 space-y-2 hidden">
-            <p id="p-res" class="text-green-400 font-bold text-xl"></p>
-            <p id="c-res" class="text-zinc-600 text-[10px]"></p>
+<body class="bg-[#0a0a0a] text-zinc-300 min-h-screen p-4 md:p-8">
+    <header class="max-w-5xl mx-auto flex justify-between items-center mb-10 border-b border-zinc-800 pb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tighter">CIMA <span class="text-cyan-500 text-sm font-light">NEURA TRADE AI</span></h1>
+            <p class="text-[10px] text-zinc-500 uppercase tracking-widest">División de Trading Algorítmico</p>
         </div>
-    </div>
+        <div class="text-right">
+            <p class="text-[10px] text-zinc-500 uppercase">Estado del Servidor</p>
+            <div class="flex items-center justify-end gap-2 text-green-500 text-xs">
+                <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+                OPERATIVO (RENDER CLOUD)
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 space-y-6">
+            <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                <p class="text-xs text-zinc-500 mb-1">BALANCE TOTAL DISPONIBLE</p>
+                <h2 class="text-4xl font-bold text-white" id="main-balance">$1,250.00</h2>
+                <p class="text-green-500 text-xs mt-2">+12.5% este mes</p>
+            </div>
+            
+            <button onclick="runAlgorithm()" id="tradeBtn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)] uppercase text-sm tracking-tighter">
+                Ejecutar Algoritmo de Alta Frecuencia
+            </button>
+        </div>
+
+        <div class="md:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+            <div class="p-4 border-b border-zinc-800 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white">HISTORIAL DE OPERACIONES REAL-TIME</h3>
+                <span class="text-[10px] bg-zinc-800 px-2 py-1 rounded text-zinc-400">LIVE FEED</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-zinc-950 text-zinc-500 uppercase">
+                        <tr>
+                            <th class="p-4 font-medium">ID</th>
+                            <th class="p-4 font-medium">Par</th>
+                            <th class="p-4 font-medium">Hora</th>
+                            <th class="p-4 font-medium text-right">Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trade-history">
+                        </tbody>
+                </table>
+                <div id="empty-msg" class="p-10 text-center text-zinc-600 text-xs italic">
+                    Esperando ejecución de algoritmo...
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        async function ejecutar() {
-            const btn = document.getElementById('botBtn');
-            btn.innerText = "CONECTANDO A RENDER...";
+        let balance = 1250.00;
+
+        async function runAlgorithm() {
+            const btn = document.getElementById('tradeBtn');
+            const history = document.getElementById('trade-history');
+            const emptyMsg = document.getElementById('empty-msg');
+            
             btn.disabled = true;
+            btn.innerText = "ANALIZANDO MERCADO...";
+            btn.classList.add('opacity-50');
 
             try {
-                const res = await fetch('/api/execute-trade', { method: 'POST' });
-                const data = await res.json();
-                document.getElementById('status').classList.remove('hidden');
-                document.getElementById('p-res').innerText = "+" + data.profit_pct + "% Profit";
-                document.getElementById('c-res').innerText = "COMISIÓN APLICADA: $" + data.commission;
-            } catch (e) {
-                alert("Error de conexión con el motor");
+                const response = await fetch('/api/execute-trade', { method: 'POST' });
+                const data = await response.json();
+                
+                // Actualizar Balance
+                const profitAmount = (balance * (data.profit_pct / 100)) - data.comision;
+                balance += profitAmount;
+                document.getElementById('main-balance').innerText = "$" + balance.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+                // Agregar al Historial
+                emptyMsg.style.display = 'none';
+                const row = `
+                    <tr class="border-b border-zinc-800 hover:bg-zinc-800/30 transition-colors">
+                        <td class="p-4 font-mono text-zinc-500">${data.id_operacion}</td>
+                        <td class="p-4 font-bold text-white">${data.par}</td>
+                        <td class="p-4 text-zinc-500">${data.timestamp}</td>
+                        <td class="p-4 text-right text-green-400 font-bold">+${data.profit_pct}%</td>
+                    </tr>
+                `;
+                history.insertAdjacentHTML('afterbegin', row);
+
+            } catch (error) {
+                alert("Error crítico en el nodo de Render");
             }
 
-            btn.innerText = "Ejecutar Bot Autónomo";
             btn.disabled = false;
+            btn.innerText = "Ejecutar Algoritmo de Alta Frecuencia";
+            btn.classList.remove('opacity-50');
         }
     </script>
 </body>
