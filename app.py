@@ -1,9 +1,23 @@
 from flask import Flask, jsonify, send_from_directory
 import random
 import os
+import psycopg2
 from datetime import datetime
+from urllib.parse import urlparse
 
 app = Flask(__name__, static_folder='static')
+
+# Configuración de la Base de Datos Neura Trade IA
+def get_db_connection():
+    db_url = os.environ.get('DATABASE_URL')
+    result = urlparse(db_url)
+    return psycopg2.connect(
+        database=result.path[1:],
+        user=result.username,
+        password=result.password,
+        host=result.hostname,
+        port=result.port
+    )
 
 @app.route('/')
 def index():
@@ -13,16 +27,29 @@ def index():
 def execute_trade():
     pares = ["BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT"]
     par_elegido = random.choice(pares)
-    profit_pct = random.uniform(0.015, 0.042)
-    comision = 5.00
+    profit_pct = round(random.uniform(1.5, 4.2), 2)
+    id_transaccion = f"TX-{random.randint(1000, 9999)}"
     
+    # Intentar guardar en la base de datos de Cima
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Crear tabla si no existe
+        cur.execute('CREATE TABLE IF NOT EXISTS trades (id serial PRIMARY KEY, trade_id varchar(20), pair varchar(10), profit float, date timestamp DEFAULT CURRENT_TIMESTAMP);')
+        # Insertar operación
+        cur.execute('INSERT INTO trades (trade_id, pair, profit) VALUES (%s, %s, %s)', (id_transaccion, par_elegido, profit_pct))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error de DB: {e}")
+
     return jsonify({
         "status": "success",
         "par": par_elegido,
-        "profit_pct": round(profit_pct * 100, 2),
-        "comision": comision,
+        "profit_pct": profit_pct,
         "timestamp": datetime.now().strftime("%H:%M:%S"),
-        "id_operacion": f"TX-{random.randint(1000, 9999)}"
+        "id_operacion": id_transaccion
     })
 
 if __name__ == "__main__":
