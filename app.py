@@ -1,73 +1,48 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_mail import Mail, Message
-from functools import wraps
-import os
+# ... (mantener imports anteriores)
+import random # Para simular variaciones del bot en esta etapa
 
-app = Flask(__name__)
-app.secret_key = 'tu_llave_secreta_neura_2026' # Cambia esto por un string aleatorio
+# Configuración de Comisiones (Proporcionalidad Directa)
+COMISION_BOT_FIJA = 0.50  # USD por operación
+PORCENTAJE_GANANCIA_ADMIN = 0.20  # Tú ganas el 20% del profit del usuario
 
-# --- Configuración de Flask-Mail (Ejemplo con Gmail) ---
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'tu_correo@gmail.com' # Tu correo de empresa
-app.config['MAIL_PASSWORD'] = 'tu_contraseña_de_aplicacion' 
-mail = Mail(app)
+@app.route('/ejecutar_trade', methods=['POST'])
+@login_required
+def ejecutar_trade():
+    # En una fase avanzada, aquí conectaríamos con la API de Binance
+    # Por ahora, simulamos una operación del bot "Tridox"
+    
+    user_id = session['user_id']
+    # Simulamos un profit aleatorio entre -1% y +3% para dar realismo
+    resultado_porcentaje = random.uniform(-0.01, 0.03)
+    
+    # Supongamos que el usuario tiene un balance (esto vendría de la DB)
+    balance_actual = 1000.00 # Ejemplo
+    profit_bruto = balance_actual * resultado_porcentaje
+    
+    if profit_bruto > 0:
+        # Cálculo de tu ganancia (Proporcional al éxito del usuario)
+        tu_comision = (profit_bruto * PORCENTAJE_GANANCIA_ADMIN) + COMISION_BOT_FIJA
+        profit_neto_usuario = profit_bruto - tu_comision
+    else:
+        # Si hay pérdida, tú solo cobras la comisión mínima por uso de bot
+        tu_comision = COMISION_BOT_FIJA
+        profit_neto_usuario = profit_bruto - tu_comision
 
-# --- DECORADOR DE SEGURIDAD ---
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash("Debes iniciar sesión para acceder a esta sección.", "warning")
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+    # Aquí actualizaríamos la base de datos:
+    # 1. Update balance usuario: balance_actual + profit_neto_usuario
+    # 2. Update balance Neura Trade (Tuyo): total + tu_comision
+    
+    flash(f"Operación completada. Profit Neto: ${profit_neto_usuario:.2f}. Comisión Neura: ${tu_comision:.2f}", "success")
+    return redirect(url_for('dashboard'))
 
-@app.route('/')
-def landing():
-    return render_template('landing.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        # Aquí iría tu lógica de verificación en DB
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        if username == 'admin' and password == 'neura2026':
-            session['user_id'] = 1
-            session['username'] = username
-            return redirect(url_for('dashboard'))
-        else:
-            flash("Credenciales incorrectas", "danger")
-    return render_template('login.html')
-
-# --- RUTA PROTEGIDA ---
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', username=session['username'])
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('landing'))
-
-# --- RECUPERACIÓN DE CONTRASEÑA ---
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        # Lógica para generar token y enviar correo
-        msg = Message("Recuperación de Contraseña - Neura Trade",
-                      sender="tu_correo@gmail.com",
-                      recipients=[email])
-        msg.body = "Hola, haz clic en el siguiente enlace para restablecer tu clave: [Enlace de prueba]"
-        # mail.send(msg) # Descomentar cuando configures tus credenciales reales
-        flash("Se ha enviado un correo con las instrucciones.", "info")
-        return redirect(url_for('login'))
-    return render_template('reset_password.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    # Datos simulados para la vista
+    context = {
+        'username': session['username'],
+        'balance': 1050.75,
+        'profit_diario': 12.50,
+        'comisiones_pagadas': 2.50
+    }
+    return render_template('dashboard.html', **context)
