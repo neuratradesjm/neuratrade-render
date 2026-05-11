@@ -3,121 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neura Trade | AI Financial Systems</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Space Grotesk', sans-serif; scroll-behavior: smooth; }</style>
+    <title>Neura Trade - Inversión Algorítmica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root { --neura-blue: #3b82f6; --neura-dark: #0f172a; }
+        body { background-color: var(--neura-dark); color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .hero-section { padding: 100px 0; background: radial-gradient(circle at top right, #1e293b, #0f172a); }
+        .login-card { background: #1e293b; border: 1px solid #334155; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn-neura { background: var(--neura-blue); border: none; font-weight: 600; transition: 0.3s; }
+        .btn-neura:hover { background: #2563eb; transform: translateY(-2px); }
+        .feature-icon { font-size: 2rem; color: var(--neura-blue); margin-bottom: 15px; }
+        .nav-neura { border-bottom: 1px solid #334155; }
+    </style>
 </head>
-<body class="bg-[#050505] text-zinc-300 selection:bg-cyan-500 selection:text-black">
+<body>
 
-    <nav class="fixed w-full z-50 bg-black/90 backdrop-blur-xl border-b border-zinc-900 p-5">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-white uppercase tracking-tighter italic">NEURA <span class="text-cyan-500 not-italic">TRADE</span></h1>
-            <div class="hidden md:flex space-x-8 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">
-                <a href="#nosotros" class="hover:text-cyan-500 transition">Nosotros</a>
-                <a href="#mision" class="hover:text-cyan-500 transition">Misión</a>
-                <a href="#legal" class="hover:text-cyan-500 transition">Legal</a>
+    <nav class="navbar navbar-expand-lg nav-neura sticky-top bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">NEURA TRADE</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="#about">Nosotros</a>
+                <a class="nav-link text-white" href="#legal">Legal</a>
             </div>
-            <a href="#login-box" class="bg-white text-black px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-cyan-500 transition-colors">Portal IA</a>
         </div>
     </nav>
 
-    <section class="min-h-screen flex items-center justify-center pt-24 px-6">
-        <div class="max-w-6xl w-full grid lg:grid-cols-2 gap-20 items-center">
-            <div class="space-y-8">
-                <span class="text-cyan-500 text-xs font-bold uppercase tracking-[0.3em]">Quantum Algorithmic Trading</span>
-                <h2 class="text-6xl md:text-7xl font-bold text-white leading-[0.9] tracking-tighter">EL PODER DE LA <br><span class="text-cyan-500">INTELIGENCIA</span> EN TUS MANOS.</h2>
-                <p class="text-zinc-500 text-lg max-w-md leading-relaxed">Infraestructura tecnológica de alta frecuencia diseñada para la optimización de capital en mercados volátiles.</p>
-            </div>
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-5 mb-lg-0">
+                    <h1 class="display-3 fw-bold mb-4">Maximiza tu Capital con <span class="text-primary">Tridox</span></h1>
+                    <p class="lead text-secondary mb-4">Tecnología de trading algorítmico de alta frecuencia. En Neura Trade, nuestro beneficio es directamente proporcional al tuyo.</p>
+                    <div class="d-flex gap-3">
+                        <div class="text-center"><h3 class="mb-0">20%</h3><small class="text-secondary">Comisión sobre Profit</small></div>
+                        <div class="vr"></div>
+                        <div class="text-center"><h3 class="mb-0">24/7</h3><small class="text-secondary">Monitoreo Binance</small></div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="login-card">
+                        <h3 class="text-center mb-4">Acceso Inversionistas</h3>
+                        
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                          {% if messages %}
+                            {% for category, message in messages %}
+                              <div class="alert alert-{{ category }} py-2 small">{{ message }}</div>
+                            {% endfor %}
+                          {% endif %}
+                        {% endwith %}
 
-            <div id="login-box" class="bg-zinc-900/50 border border-zinc-800 p-10 rounded-3xl backdrop-blur-sm shadow-2xl">
-                <h3 class="text-2xl font-bold text-white mb-8 tracking-tighter uppercase">Terminal de Acceso</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] text-zinc-600 uppercase font-bold ml-1">Identificador de Usuario</label>
-                        <input type="text" id="user" class="w-full bg-black/50 border border-zinc-800 p-4 rounded-xl text-sm focus:border-cyan-500 outline-none text-white transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-zinc-600 uppercase font-bold ml-1">Código de Seguridad</label>
-                        <input type="password" id="pass" class="w-full bg-black/50 border border-zinc-800 p-4 rounded-xl text-sm focus:border-cyan-500 outline-none text-white transition-all">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 pt-4">
-                        <button onclick="handleLogin()" class="bg-cyan-500 text-black font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20">Iniciar Sesión</button>
-                        <button onclick="handleRegister()" class="border border-zinc-700 text-white font-black py-4 rounded-xl uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all">Registrarse</button>
+                        <form action="/login" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary">Usuario</label>
+                                <input type="text" name="username" class="form-control bg-dark text-white border-secondary" placeholder="admin" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary">Contraseña</label>
+                                <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="btn btn-neura w-100 py-2 text-white mb-3">Entrar al Ecosistema</button>
+                            <div class="text-center">
+                                <a href="/reset_password" class="text-secondary small text-decoration-none">¿Olvidaste tu contraseña?</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="nosotros" class="py-32 bg-zinc-950 px-6">
-        <div class="max-w-4xl mx-auto space-y-12">
-            <div class="inline-block border-l-2 border-cyan-500 pl-4">
-                <h2 class="text-4xl font-bold text-white uppercase tracking-tighter">Quiénes Somos</h2>
-            </div>
-            <p class="text-zinc-400 text-xl leading-relaxed font-light">
-                Neura Trade es un ecosistema de desarrollo tecnológico enfocado en la creación de soluciones financieras automatizadas. Nuestro núcleo operativo utiliza modelos de probabilidad avanzada y ejecución instantánea para gestionar activos digitales con precisión milimétrica, eliminando el factor emocional del trading convencional.
-            </p>
-        </div>
-    </section>
-
-    <section id="mision" class="py-32 px-6 border-y border-zinc-900">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
-            <div class="p-12 bg-zinc-900/30 border border-zinc-800 rounded-3xl hover:border-cyan-500/50 transition-colors">
-                <h3 class="text-cyan-500 text-xs font-black mb-6 uppercase tracking-widest">Nuestra Misión</h3>
-                <p class="text-zinc-400 text-lg leading-relaxed font-light">Facilitar el crecimiento financiero mediante tecnología de punta, proporcionando un entorno seguro donde la inteligencia artificial trabaje incansablemente para nuestros usuarios.</p>
-            </div>
-            <div class="p-12 bg-zinc-900/30 border border-zinc-800 rounded-3xl hover:border-cyan-500/50 transition-colors">
-                <h3 class="text-cyan-500 text-xs font-black mb-6 uppercase tracking-widest">Nuestra Visión</h3>
-                <p class="text-zinc-400 text-lg leading-relaxed font-light">Liderar la transición global hacia el trading algorítmico, convirtiendo a Neura Trade en la plataforma de referencia para la gestión automatizada de capital.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="legal" class="py-32 px-6">
-        <div class="max-w-4xl mx-auto border-t border-zinc-900 pt-20">
-            <h2 class="text-2xl font-bold text-white mb-10 uppercase tracking-tighter italic">Compliance & Legalidad</h2>
-            <div class="grid md:grid-cols-2 gap-12 text-zinc-500 text-sm leading-relaxed font-light">
-                <p>Neura Trade opera exclusivamente como un proveedor de software algorítmico. Todas las operaciones se ejecutan mediante llaves API de lectura y comercio, garantizando que el control final del retiro de fondos permanezca siempre en manos del usuario titular en sus respectivos exchanges autorizados.</p>
-                <p>Nuestra tecnología implementa protocolos de encriptación AES-256 para la protección de datos sensibles. El trading de activos digitales conlleva riesgos; por ello, Neura Trade integra módulos de Stop-Loss algorítmico para mitigar la exposición ante volatilidades extremas del mercado.</p>
+    <section id="about" class="py-5 border-top border-secondary">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="p-4 bg-dark rounded-3 h-100">
+                        <i class="bi bi-eye feature-icon"></i>
+                        <h4>Misión</h4>
+                        <p class="text-secondary">Democratizar el acceso a herramientas de trading institucional para inversores minoristas a través de Neura Trade.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 bg-dark rounded-3 h-100">
+                        <i class="bi bi-bullseye feature-icon"></i>
+                        <h4>Visión</h4>
+                        <p class="text-secondary">Ser el referente líder en automatización financiera, integrando inteligencia artificial en cada decisión de mercado.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" id="legal">
+                    <div class="p-4 bg-dark rounded-3 h-100 border border-primary">
+                        <i class="bi bi-shield-shaded feature-icon text-primary"></i>
+                        <h4>Enfoque Legal</h4>
+                        <p class="text-secondary small">Neura Trade opera bajo un modelo de consultoría tecnológica. Los fondos permanecen bajo gestión algorítmica con transparencia total en comisiones.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="py-20 border-t border-zinc-900 text-center">
-        <p class="text-[9px] text-zinc-700 uppercase tracking-[0.5em]">&copy; 2026 Neura Trade System - Protocolo Cero Errores</p>
+    <footer class="py-4 text-center border-top border-secondary mt-5">
+        <p class="text-secondary small mb-0">&copy; 2026 Neura Trade. San Juan de los Morros, Venezuela.</p>
     </footer>
 
-    <script>
-        async function handleLogin() {
-            const user = document.getElementById('user').value;
-            const pass = document.getElementById('pass').value;
-            if(!user || !pass) return alert("Ingrese credenciales");
-
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user, pass})
-            });
-            const data = await res.json();
-            if(data.status === 'success') window.location.href = '/dashboard';
-            else alert(data.message);
-        }
-
-        async function handleRegister() {
-            const user = document.getElementById('user').value;
-            const pass = document.getElementById('pass').value;
-            if(!user || !pass) return alert("Complete los campos");
-
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user, pass})
-            });
-            const data = await res.json();
-            if(data.status === 'success') alert("Registro exitoso. Ya puede iniciar sesión.");
-            else alert(data.message);
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
