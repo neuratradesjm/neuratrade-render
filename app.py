@@ -7,18 +7,17 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
-# Clave necesaria para encriptar las sesiones y mensajes flash
 app.secret_key = 'neura_trade_ultra_secret_key_2026'
 
 # --- CONFIGURACIÓN DE COMISIONES NEURA TRADE ---
-COMISION_BOT_FIJA = 0.50          # Tarifa base por mantenimiento
-PORCENTAJE_GANANCIA_ADMIN = 0.20  # Tu beneficio: 20% del profit que gane el usuario
+COMISION_BOT_FIJA = 0.50          # Tarifa base por operación
+PORCENTAJE_GANANCIA_ADMIN = 0.20  # Tu beneficio: 20% del profit del usuario
 
-# --- CONFIGURACIÓN DE CORREO (Flask-Mail) ---
+# --- CONFIGURACIÓN DE CORREO ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'tu_correo@gmail.com' # Sustituir por el correo de Neura Trade
+app.config['MAIL_USERNAME'] = 'tu_correo@gmail.com' 
 app.config['MAIL_PASSWORD'] = 'tu_clave_de_aplicacion'
 mail = Mail(app)
 
@@ -27,8 +26,8 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            flash("Acceso restringido. Por favor, inicia sesión en Neura Trade.", "warning")
-            return redirect(url_for('login'))
+            flash("Acceso restringido. Por favor inicia sesión.", "warning")
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -36,30 +35,25 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    # La landing page ahora contiene el login y la información corporativa
     return render_template('landing.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        
-        # Credenciales de acceso de prueba para Neura Trade
-        if username == 'admin' and password == 'neura2026':
-            session.clear()
-            session['user_id'] = 1
-            session['username'] = 'Administrador'
-            session['balance'] = 1000.00 # Balance inicial de prueba
-            session['profit_total'] = 0.0
-            session['comisiones_totales'] = 0.0
-            
-            flash("Bienvenido al ecosistema Neura Trade.", "success")
-            return redirect(url_for('dashboard'))
-        else:
-            flash("Credenciales incorrectas. Verifique e intente de nuevo.", "danger")
-            
-    return redirect(url_for('index'))
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    # Credenciales de acceso validadas
+    if username == 'admin' and password == 'neura2026':
+        session.clear()
+        session['user_id'] = 1
+        session['username'] = 'admin'
+        session['balance'] = 1000.00
+        session['profit_total'] = 0.0
+        session['comisiones_totales'] = 0.0
+        return redirect(url_for('dashboard'))
+    else:
+        flash("Credenciales incorrectas. Verifique usuario y clave.", "danger")
+        return redirect(url_for('index'))
 
 @app.route('/dashboard')
 @login_required
@@ -73,48 +67,28 @@ def dashboard():
 @app.route('/ejecutar_trade', methods=['POST'])
 @login_required
 def ejecutar_trade():
-    """
-    Motor de Trading Tridox: 
-    Calcula profit y aplica la proporcionalidad directa de ganancias.
-    """
     balance_actual = session.get('balance', 1000.00)
-    
-    # Simulación de mercado algorítmico (Tridox)
     variacion = random.uniform(-0.01, 0.03) 
     profit_bruto = balance_actual * variacion
     
     if profit_bruto > 0:
-        # Ganancia proporcional: Tú ganas si el usuario gana
         tu_comision = (profit_bruto * PORCENTAJE_GANANCIA_ADMIN) + COMISION_BOT_FIJA
         profit_neto_usuario = profit_bruto - tu_comision
     else:
-        # En pérdida, solo se cobra la comisión mínima por infraestructura
         tu_comision = COMISION_BOT_FIJA
         profit_neto_usuario = profit_bruto - tu_comision
 
-    # Actualización de datos en sesión (Persistencia temporal)
     session['balance'] = round(balance_actual + profit_neto_usuario, 2)
     session['profit_total'] = round(profit_neto_usuario, 2)
     session['comisiones_totales'] = round(session.get('comisiones_totales', 0.0) + tu_comision, 2)
     
-    flash(f"Ciclo Tridox completado con éxito.", "success")
+    flash(f"Operación Tridox completada.", "success")
     return redirect(url_for('dashboard'))
-
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        # Lógica de envío preparada
-        flash(f"Se han enviado instrucciones a {email}.", "info")
-        return redirect(url_for('index'))
-    return render_template('reset_password.html')
 
 @app.route('/logout')
 def logout():
     session.clear()
-    flash("Sesión finalizada en Neura Trade.", "info")
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # Puerto por defecto para desarrollo
     app.run(debug=True)
