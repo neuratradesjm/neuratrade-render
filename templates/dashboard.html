@@ -2,94 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - Neura Trade</title>
+    <title>Panel Neura Trade</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { background-color: #0b0f19; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .sidebar { background-color: #161b22; min-height: 100vh; border-right: 1px solid #30363d; }
-        .card-stat { background-color: #161b22; border: 1px solid #30363d; border-radius: 12px; transition: transform 0.3s; }
-        .card-stat:hover { transform: translateY(-5px); border-color: #3b82f6; }
-        .btn-neura { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; font-weight: bold; letter-spacing: 1px; }
-        .tradingview-container { height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; }
-        .status-pill { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; }
+        body { background-color: #0b0f19; color: #e2e8f0; }
+        .card-stat { background-color: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
     </style>
 </head>
 <body>
-
-<div class="container-fluid">
-    <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar p-4">
-            <h3 class="text-primary fw-bold mb-4">NEURA TRADE</h3>
-            <ul class="nav flex-column">
-                <li class="nav-item mb-3"><a href="#" class="nav-link text-white"><i class="bi bi-cpu me-2"></i> Tridox Bot</a></li>
-                <li class="nav-item mb-3"><a href="#" class="nav-link text-secondary"><i class="bi bi-wallet2 me-2"></i> Mi Billetera</a></li>
-                <li class="nav-item mb-3"><a href="#" class="nav-link text-secondary"><i class="bi bi-journal-text me-2"></i> Operaciones</a></li>
-                <hr class="text-secondary">
-                <li class="nav-item"><a href="/logout" class="nav-link text-danger"><i class="bi bi-power me-2"></i> Cerrar Sesión</a></li>
-            </ul>
-        </nav>
-
-        <main class="col-md-10 p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="mb-1">Bienvenido, {{ username }}</h2>
-                    <span class="status-pill"><i class="bi bi-shield-check me-1"></i> Conexión Segura Neura Trade</span>
-                </div>
-                <div class="text-end">
-                    <p class="mb-0 text-secondary">Balance Disponible</p>
-                    <h2 class="text-success fw-bold">${{ "{:,.2f}".format(balance) }}</h2>
+    <nav class="navbar navbar-dark bg-dark p-3 border-bottom border-secondary">
+        <span class="navbar-brand fw-bold">NEURA TRADE</span>
+        <a href="/logout" class="btn btn-outline-danger btn-sm">Cerrar Sesión</a>
+    </nav>
+    <div class="container-fluid p-4">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card-stat">
+                    <p class="text-secondary small mb-1">Balance Actual</p>
+                    <h3 class="text-success">${{ "{:,.2f}".format(balance) }}</h3>
                 </div>
             </div>
-
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card-stat p-3 h-100 text-center">
-                        <p class="text-secondary mb-1">Profit del Día</p>
-                        <h4 class="text-primary fw-bold">+${{ profit_diario }}</h4>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card-stat p-3 h-100 text-center">
-                        <p class="text-secondary mb-1">Comisión Empresa</p>
-                        <h4 class="text-warning fw-bold">-${{ comisiones_pagadas }}</h4>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <form action="/ejecutar_trade" method="POST" class="h-100">
-                        <button type="submit" class="btn btn-neura w-100 h-100 py-3 text-white shadow">
-                            <i class="bi bi-play-circle-fill me-2"></i> INICIAR CICLO TRIDOX (BINANCE)
-                        </button>
-                    </form>
+            <div class="col-md-4">
+                <div class="card-stat">
+                    <p class="text-secondary small mb-1">Profit Tridox</p>
+                    <h3 class="text-primary">+${{ profit_diario }}</h3>
                 </div>
             </div>
-
-            <div class="tradingview-container shadow-lg">
-                <div id="tradingview_neura_chart"></div>
+            <div class="col-md-4">
+                <form action="/ejecutar_trade" method="POST">
+                    <button type="submit" class="btn btn-primary w-100 h-100 py-3 fw-bold">ACTIVAR BOT</button>
+                </form>
             </div>
-        </main>
+        </div>
+        <div id="chart" style="height: 500px; border: 1px solid #30363d; border-radius: 10px; overflow: hidden;"></div>
     </div>
-</div>
-
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-<script type="text/javascript">
-  new TradingView.widget({
-    "autosize": true,
-    "symbol": "BINANCE:BTCUSDT",
-    "interval": "15",
-    "timezone": "America/Caracas",
-    "theme": "dark",
-    "style": "1",
-    "locale": "es",
-    "toolbar_bg": "#161b22",
-    "enable_publishing": false,
-    "hide_side_toolbar": false,
-    "allow_symbol_change": true,
-    "container_id": "tradingview_neura_chart"
-  });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        new TradingView.widget({
+            "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "15",
+            "timezone": "America/Caracas", "theme": "dark", "style": "1",
+            "locale": "es", "container_id": "chart"
+        });
+    </script>
 </body>
 </html>
