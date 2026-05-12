@@ -2,58 +2,182 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Neura Trade - Registro de Cliente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neura Trade | Registro de Nuevo Cliente</title>
     <style>
-        body { background: #0d1117; color: white; font-family: sans-serif; padding: 50px; }
-        .reg-container { background: #161b22; padding: 40px; border-radius: 15px; border: 1px solid #30363d; max-width: 600px; margin: 0 auto; }
+        :root {
+            --primary: #58a6ff;
+            --secondary: #238636;
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .reg-container {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h2 { color: white; margin: 10px 0; font-size: 1.8rem; }
+        .header p { color: #8b949e; font-size: 0.9rem; }
+        
+        .section-title {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #8b949e; }
-        input, select { width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px; box-sizing: border-box; }
-        .section-title { border-bottom: 1px solid #30363d; padding-bottom: 10px; margin: 25px 0 15px; color: #58a6ff; }
-        .btn-reg { width: 100%; padding: 15px; background: #238636; border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #8b949e; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+        .input-group input:focus { border-color: var(--primary); outline: none; }
+
+        .captcha-box {
+            background: #090c10;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .captcha-box input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--secondary);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .btn-submit:hover { background: #2ea043; transform: translateY(-2px); }
+        
+        .footer-links { text-align: center; margin-top: 20px; font-size: 0.85rem; }
+        .footer-links a { color: var(--primary); text-decoration: none; }
+
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
+
     <div class="reg-container">
-        <h2 style="text-align: center;">Formulario de Registro Neura Trade</h2>
+        <div class="header">
+            <h2>Únete a Neura Trade</h2>
+            <p>Completa tu registro para activar el Terminal de Trading Real</p>
+        </div>
+
         <form action="/registro" method="POST">
             
-            <div class="section-title">Datos Personales</div>
+            <div class="section-title">1. Identidad y Nacionalidad</div>
             <div class="grid">
-                <div><label>Nombres</label><input type="text" name="nombres" required></div>
-                <div><label>Apellidos</label><input type="text" name="apellidos" required></div>
+                <div class="input-group">
+                    <label>Nombres Completos</label>
+                    <input type="text" name="nombres" required placeholder="Ej: Luis Francisco">
+                </div>
+                <div class="input-group">
+                    <label>Apellidos Completos</label>
+                    <input type="text" name="apellidos" required placeholder="Ej: García Salas">
+                </div>
             </div>
             
-            <div class="grid" style="margin-top: 15px;">
-                <div><label>Nacionalidad</label><input type="text" name="nacionalidad" required></div>
-                <div>
+            <div class="grid">
+                <div class="input-group">
+                    <label>Nacionalidad</label>
+                    <input type="text" name="nacionalidad" required placeholder="Ej: Venezolana">
+                </div>
+                <div class="input-group">
                     <label>Tipo de Documento</label>
-                    <select name="tipo_doc">
+                    <select name="tipo_doc" required>
                         <option value="cedula">Cédula de Identidad</option>
-                        <option value="pasaporte">Pasaporte</option>
+                        <option value="pasaporte">Pasaporte Internacional</option>
                     </select>
                 </div>
             </div>
-            <div style="margin-top: 15px;"><label>Número de Documento</label><input type="text" name="documento" required></div>
+            <div class="input-group">
+                <label>Número de Documento / ID</label>
+                <input type="text" name="documento" required placeholder="Ingrese el número sin puntos ni espacios">
+            </div>
 
-            <div class="section-title">Validación de Pagos (TXID / Hash)</div>
+            <div class="section-title">2. Validación de Pagos (Bot & Broker)</div>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 15px;">
+                Para activar su cuenta, debe suministrar los hashes (TXID) de las transacciones realizadas.
+            </p>
             <div class="grid">
-                <div><label>Pago Activación Bot</label><input type="text" name="pago_bot" placeholder="TXID de $20" required></div>
-                <div><label>Depósito Broker</label><input type="text" name="pago_broker" placeholder="TXID depósito inicial" required></div>
+                <div class="input-group">
+                    <label>TXID Pago Activación Bot ($20)</label>
+                    <input type="text" name="pago_bot" required placeholder="Hash de la red TRC20">
+                </div>
+                <div class="input-group">
+                    <label>TXID Depósito Inicial Broker</label>
+                    <input type="text" name="pago_broker" required placeholder="Hash de envío al Broker">
+                </div>
             </div>
 
-            <div class="section-title">Seguridad</div>
+            <div class="section-title">3. Credenciales de Acceso</div>
             <div class="grid">
-                <div><label>Usuario Deseado</label><input type="text" name="usuario_nuevo" required></div>
-                <div><label>Contraseña</label><input type="password" name="clave_nueva" required></div>
+                <div class="input-group">
+                    <label>Usuario Deseado</label>
+                    <input type="text" name="usuario_nuevo" required placeholder="Ej: luis_trader">
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="clave_nueva" required placeholder="Mínimo 8 caracteres">
+                </div>
             </div>
 
-            <div style="margin-top: 20px; background: #0d1117; padding: 15px; border-radius: 5px; border: 1px solid #30363d; text-align: center;">
-                <input type="checkbox" required style="width: auto;"> No soy un robot (Captcha de Seguridad)
+            <div class="captcha-box">
+                <input type="checkbox" id="robot" required>
+                <label for="robot" style="color: white; font-weight: 500;">No soy un robot (Verificación de Identidad)</label>
             </div>
 
-            <button type="submit" class="btn-reg">ENVIAR REGISTRO PARA VALIDACIÓN</button>
+            <button type="submit" class="btn-submit">ENVIAR REGISTRO PARA VALIDACIÓN</button>
+            
+            <div class="footer-links">
+                <span style="color: #8b949e;">¿Ya tienes una cuenta?</span> 
+                <a href="/login">Ingresar al Terminal</a>
+            </div>
         </form>
     </div>
+
 </body>
 </html>
