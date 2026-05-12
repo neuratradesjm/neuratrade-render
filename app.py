@@ -4,17 +4,19 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'neura_trade_production_key_2026' #
+app.secret_key = 'neura_trade_production_key_2026'
+
+# --- PERSISTENCIA TEMPORAL (Simulación de Base de Datos para Neura Trade) ---
+# Aquí se guardarán las solicitudes de registro hasta que se reinicie el servidor
+solicitudes_registro = []
 
 # --- CONFIGURACIÓN DE IDENTIDAD Y APIS ---
-# Credenciales Neura Trade y Conector Binance
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
 API_SECRET = 'DiGvPZkwDgq2kvhs21JtjxkMw2wrn2jftheE3g3vvNoqrhw20jtEcno99RQ8Xv86u'
-DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI" #
+DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI"
 
 # --- MOTOR DE TRADING REAL (NEURA TRADE BOT) ---
 def get_bot_engine(symbol="BTCUSDT"):
-    """Mantiene la lógica real de mercado para atraer usuarios con alta rentabilidad."""
     try:
         from binance.client import Client
         client = Client(API_KEY, API_SECRET)
@@ -28,7 +30,6 @@ def get_bot_engine(symbol="BTCUSDT"):
             "profit_objetivo": "Alta Rentabilidad"
         }
     except Exception:
-        # Fallback de seguridad operativa para visualización local
         base_balance = session.get('user_balance', 1250.00)
         return {
             "balance": f"{base_balance:,.2f}",
@@ -55,7 +56,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# --- RUTAS DE NAVEGACIÓN Y GESTIÓN ---
+# --- RUTAS DE NAVEGACIÓN ---
 
 @app.route('/')
 def home():
@@ -69,86 +70,74 @@ def login():
         user = request.form.get('usuario').strip()
         pw = request.form.get('clave').strip()
         if user == 'admin' and pw == 'admin1234':
-            session['logged_in'] = True
-            session['user_id'] = user
-            session['role'] = 'admin'
+            session.update({'logged_in': True, 'user_id': user, 'role': 'admin'})
             return redirect(url_for('admin_dashboard'))
         elif user == 'cliente' and pw == 'cliente1234':
-            session['logged_in'] = True
-            session['user_id'] = user
-            session['role'] = 'user'
+            session.update({'logged_in': True, 'user_id': user, 'role': 'user'})
             if 'user_balance' not in session: session['user_balance'] = 1250.00
             return redirect(url_for('billetera'))
         return "Credenciales incorrectas."
     return render_template('index.html')
 
-# --- NUEVA FUNCIONALIDAD: REGISTRO DE CLIENTES ---
+# --- REGISTRO Y CAPTACIÓN NEURA TRADE ---
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
-    """Captación de data legal, identidad y validación de pagos."""
     if request.method == 'POST':
-        datos_cliente = {
+        nueva_solicitud = {
             "nombres": request.form.get('nombres'),
             "apellidos": request.form.get('apellidos'),
             "nacionalidad": request.form.get('nacionalidad'),
             "tipo_doc": request.form.get('tipo_doc'), 
             "documento": request.form.get('documento'),
-            "usuario": request.form.get('usuario_nuevo'),
-            "pago_bot_txid": request.form.get('pago_bot'),
-            "pago_broker_txid": request.form.get('pago_broker'),
-            "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "usuario_nuevo": request.form.get('usuario_nuevo'),
+            "pago_bot": request.form.get('pago_bot'),
+            "pago_broker": request.form.get('pago_broker'),
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        # Registro silencioso para revisión administrativa
-        print(f"Registro recibido: {datos_cliente['usuario']}")
-        return "Su registro y pagos están siendo validados. Pronto podrá acceder al Terminal."
-        
+        solicitudes_registro.append(nueva_solicitud)
+        return "Registro enviado con éxito. En Neura Trade validaremos su pago en breve."
     return render_template('registro.html')
 
-# --- GESTIÓN OPERATIVA Y AGENDA ---
+# --- PANEL ADMINISTRATIVO NEURA TRADE ---
+@app.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    stats = {
+        "usuarios_activos": 124, 
+        "volumen_24h": "45,230.00 USDT", 
+        "comisiones_activas": len(solicitudes_registro) * 20
+    }
+    return render_template('admin_dashboard.html', solicitudes=solicitudes_registro, stats=stats)
+
+@app.route('/aprobar/<usuario>')
+@login_required
+@admin_required
+def aprobar_usuario(usuario):
+    # Lógica para mover de solicitudes a usuarios activos
+    global solicitudes_registro
+    solicitudes_registro = [s for s in solicitudes_registro if s['usuario_nuevo'] != usuario]
+    return redirect(url_for('admin_dashboard'))
+
+# --- OPERATIVA Y AGENDA ---
 @app.route('/agenda')
 @login_required
 @admin_required
 def agenda():
-    """Mantiene la planificación diaria de las 8 AM (+584124407893)."""
     agenda_datos = [
         {"hora": "08:00 AM", "tarea": "WhatsApp +584124407893: Agenda diaria", "estado": "Pendiente"},
         {"hora": "08:05 AM", "tarea": "Email a luisfgarsa@gmail.com", "estado": "Pendiente"},
-        {"hora": "10:00 AM", "tarea": "Auditoría Neura Trade vs Binance", "estado": "Programado"},
-        {"hora": "02:00 PM", "tarea": "Validación de nuevos registros de clientes", "estado": "Pendiente"},
-        {"hora": "08:00 PM", "tarea": "Cierre de profit y respaldo en Keep", "estado": "Pendiente"}
+        {"hora": "02:00 PM", "tarea": "Validación registros Neura Trade", "estado": "Activo"}
     ]
     return render_template('agenda.html', tareas=agenda_datos)
 
-# --- RUTAS FINANCIERAS (PASARELA) ---
 @app.route('/billetera')
 @login_required
 def billetera():
     mercado = request.args.get('mercado', 'BTCUSDT')
     datos_bot = get_bot_engine(mercado)
-    mercados_disponibles = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
-    return render_template('billetera.html', datos=datos_bot, mercados=mercados_disponibles, user=session.get('user_id'))
-
-@app.route('/depositar')
-@login_required
-def depositar():
-    return render_template('depositar.html', direccion=DIRECCION_USDT)
-
-@app.route('/confirmar_pago', methods=['POST'])
-@login_required
-def confirmar_pago():
-    monto = float(request.form.get('monto', 0))
-    txid = request.form.get('txid')
-    if monto >= 20 and txid:
-        session['user_balance'] = session.get('user_balance', 0) + monto
-        return redirect(url_for('billetera'))
-    return "Error: Depósito mínimo $20 USDT requerido."
-
-@app.route('/admin/dashboard')
-@login_required
-@admin_required
-def admin_dashboard():
-    stats = {"usuarios_activos": 124, "volumen_24h": "45,230.00 USDT", "comisiones_totales": "1,240.50 USDT"}
-    return render_template('dashboard.html', stats=stats)
+    mercados = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
+    return render_template('billetera.html', datos=datos_bot, mercados=mercados, user=session.get('user_id'))
 
 @app.route('/salir')
 def salir():
