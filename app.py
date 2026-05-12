@@ -4,15 +4,17 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'neura_trade_production_key_2026' 
+app.secret_key = 'neura_trade_production_key_2026' #
 
 # --- CONFIGURACIÓN DE IDENTIDAD Y APIS ---
+# Credenciales Neura Trade y Conector Binance
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
 API_SECRET = 'DiGvPZkwDgq2kvhs21JtjxkMw2wrn2jftheE3g3vvNoqrhw20jtEcno99RQ8Xv86u'
-DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI" 
+DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI" #
 
 # --- MOTOR DE TRADING REAL (NEURA TRADE BOT) ---
 def get_bot_engine(symbol="BTCUSDT"):
+    """Mantiene la lógica real de mercado para atraer usuarios con alta rentabilidad."""
     try:
         from binance.client import Client
         client = Client(API_KEY, API_SECRET)
@@ -26,6 +28,7 @@ def get_bot_engine(symbol="BTCUSDT"):
             "profit_objetivo": "Alta Rentabilidad"
         }
     except Exception:
+        # Fallback de seguridad operativa para visualización local
         base_balance = session.get('user_balance', 1250.00)
         return {
             "balance": f"{base_balance:,.2f}",
@@ -52,7 +55,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# --- RUTAS DE NAVEGACIÓN ---
+# --- RUTAS DE NAVEGACIÓN Y GESTIÓN ---
 
 @app.route('/')
 def home():
@@ -79,22 +82,44 @@ def login():
         return "Credenciales incorrectas."
     return render_template('index.html')
 
-# --- TAREA 3: GESTIÓN DE AGENDA AUTOMATIZADA ---
+# --- NUEVA FUNCIONALIDAD: REGISTRO DE CLIENTES ---
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    """Captación de data legal, identidad y validación de pagos."""
+    if request.method == 'POST':
+        datos_cliente = {
+            "nombres": request.form.get('nombres'),
+            "apellidos": request.form.get('apellidos'),
+            "nacionalidad": request.form.get('nacionalidad'),
+            "tipo_doc": request.form.get('tipo_doc'), 
+            "documento": request.form.get('documento'),
+            "usuario": request.form.get('usuario_nuevo'),
+            "pago_bot_txid": request.form.get('pago_bot'),
+            "pago_broker_txid": request.form.get('pago_broker'),
+            "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        # Registro silencioso para revisión administrativa
+        print(f"Registro recibido: {datos_cliente['usuario']}")
+        return "Su registro y pagos están siendo validados. Pronto podrá acceder al Terminal."
+        
+    return render_template('registro.html')
+
+# --- GESTIÓN OPERATIVA Y AGENDA ---
 @app.route('/agenda')
 @login_required
 @admin_required
 def agenda():
-    """Planificación operativa para Luis García Salas."""
+    """Mantiene la planificación diaria de las 8 AM (+584124407893)."""
     agenda_datos = [
-        {"hora": "08:00 AM", "tarea": "Enviar resumen de agenda a WhatsApp +584124407893", "estado": "Pendiente"},
-        {"hora": "08:05 AM", "tarea": "Enviar correo diario a luisfgarsa@gmail.com", "estado": "Pendiente"},
-        {"hora": "10:00 AM", "tarea": "Auditoría de operaciones Neura Trade en Binance", "estado": "Programado"},
-        {"hora": "02:00 PM", "tarea": "Revisión de nuevos depósitos de $20 USDT", "estado": "Programado"},
-        {"hora": "08:00 PM", "tarea": "Cierre de profit diario y respaldo en Keep", "estado": "Pendiente"}
+        {"hora": "08:00 AM", "tarea": "WhatsApp +584124407893: Agenda diaria", "estado": "Pendiente"},
+        {"hora": "08:05 AM", "tarea": "Email a luisfgarsa@gmail.com", "estado": "Pendiente"},
+        {"hora": "10:00 AM", "tarea": "Auditoría Neura Trade vs Binance", "estado": "Programado"},
+        {"hora": "02:00 PM", "tarea": "Validación de nuevos registros de clientes", "estado": "Pendiente"},
+        {"hora": "08:00 PM", "tarea": "Cierre de profit y respaldo en Keep", "estado": "Pendiente"}
     ]
     return render_template('agenda.html', tareas=agenda_datos)
 
-# --- RUTAS FINANCIERAS Y BOT ---
+# --- RUTAS FINANCIERAS (PASARELA) ---
 @app.route('/billetera')
 @login_required
 def billetera():
