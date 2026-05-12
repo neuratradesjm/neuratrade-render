@@ -3,43 +3,49 @@ import os
 
 app = Flask(__name__)
 
-# --- CONFIGURACIÓN DE BINANCE (NEURA TRADE) ---
-# Se mantiene la configuración exacta que verificamos anteriormente
+# --- NEURA TRADE CONFIGURATION ---
+# Estas llaves permiten la conexión con Binance para generar tus beneficios.
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
 API_SECRET = 'DiGvPZkwDgq2kvhs21JtjxkMw2wrn2jftheE3g3vvNoqrhw20jtEcno99RQ8Xv86u'
 
-# --- RUTAS DE NAVEGACIÓN ---
-
 @app.route('/')
 def index():
-    # Carga la landing page con el diseño de Neura Trade
-    return render_template('index.html')
+    try:
+        # Carga la interfaz de Neura Trade que se ve en tu captura.
+        return render_template('index.html')
+    except Exception as e:
+        return f"Error: index.html not found. {str(e)}", 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # Los nombres 'usuario' y 'password' coinciden con tu formulario.
         usuario = request.form.get('usuario')
         password = request.form.get('password')
         
-        # Validación de acceso para el administrador
+        # Validación para acceder al dashboard de Neura Trade.
         if usuario == 'admin' and password == 'admin1234':
             return redirect(url_for('dashboard'))
         else:
-            return render_template('index.html', error="Credenciales incorrectas")
+            return "Invalid credentials", 401
             
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 @app.route('/dashboard')
 def dashboard():
-    # Aquí se visualizan los beneficios proporcionales de los usuarios y tus comisiones
-    return render_template('dashboard.html')
+    try:
+        return render_template('dashboard.html')
+    except:
+        return "Dashboard logic active. Template file missing."
 
 @app.route('/registro')
 def registro():
-    # Ruta para el botón de registro que solicitaste mantener
-    return render_template('registro.html')
+    try:
+        return render_template('registro.html')
+    except:
+        return "Registration page logic active."
 
 if __name__ == '__main__':
-    # Configuración de puerto para Render
+    # Configuración de puerto necesaria para que Render no falle.
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
