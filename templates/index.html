@@ -85,9 +85,10 @@
             border: 1px solid var(--border);
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
         .login-container h2 { text-align: center; margin-bottom: 30px; color: white; }
-        .input-group { margin-bottom: 20px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; }
         .input-group input {
             width: 100%;
@@ -108,7 +109,9 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 1rem;
+            transition: 0.3s;
         }
+        .btn-login:hover { background: #2ea043; }
 
         /* Footer */
         footer {
@@ -163,6 +166,25 @@
                 </div>
                 <button type="submit" class="btn-login">ACCEDER AL SISTEMA</button>
             </form>
+
+            <!-- Bloque de Registro y Soporte -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.9rem;">
+                <p style="color: #8b949e; margin-bottom: 10px;">¿Aún no tienes una cuenta activa?</p>
+                <a href="/registro" style="color: var(--primary); text-decoration: none; font-weight: bold; font-size: 1rem; display: block; margin-bottom: 15px;">
+                    SOLICITAR REGISTRO DE CLIENTE
+                </a>
+                
+                <div style="display: flex; justify-content: center; gap: 15px; font-size: 0.8rem;">
+                    <a href="https://wa.me/584124407893" target="_blank" style="color: #8b949e; text-decoration: none;">
+                        Soporte WhatsApp
+                    </a>
+                    <span style="color: var(--border);">|</span>
+                    <a href="mailto:luisfgarsa@gmail.com" style="color: #8b949e; text-decoration: none;">
+                        Contacto Email
+                    </a>
+                </div>
+            </div>
+
             <p style="font-size: 0.8rem; text-align: center; margin-top: 20px; color: #8b949e;">
                 Conectado a Binance API v3 | Sistema Real de Gestión
             </p>
