@@ -2,58 +2,82 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Billetera | Neura Trade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billetera | Neura Trade IA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', sans-serif; }
-        .wallet-card { max-width: 800px; margin: 50px auto; background: #161a1e; border-radius: 15px; padding: 30px; border: 1px solid #00d2ff; }
-        .balance-box { background: #1e2329; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .btn-action { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .deposit { background: #00d2ff; color: #0b0e11; }
-        .withdraw { background: #2b2f36; color: white; border: 1px solid #474d57; }
-        .status { color: #0ecb81; font-size: 0.9em; }
+        :root { --neon-blue: #00d2ff; --dark-bg: #0b0e11; --card-bg: #161a1e; --danger: #f6465d; --success: #0ecb81; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .wallet-container { width: 100%; max-width: 450px; background: var(--card-bg); border-radius: 20px; border: 1px solid #2b2f36; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .balance-card { background: #1e2329; border-radius: 15px; padding: 25px; text-align: center; margin: 20px 0; border: 1px solid var(--neon-blue); }
+        .balance-value { font-size: 2.8em; font-weight: bold; color: white; margin: 10px 0; }
+        .btn-wallet { display: block; width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; margin-bottom: 12px; transition: 0.3s; text-align: center; font-size: 1em; }
+        .btn-deposit { background: var(--neon-blue); color: #0b0e11; }
+        .btn-withdraw { background: transparent; color: white; border: 1px solid #474d57; }
+        .btn-deposit:hover { box-shadow: 0 0 20px var(--neon-blue); transform: translateY(-2px); }
+        .btn-withdraw:hover { background: #2b2f36; }
+        .history-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2b2f36; font-size: 0.85em; color: #848e9c; }
     </style>
 </head>
 <body>
-    <div class="wallet-card">
-        <div style="display: flex; justify-content: space-between;">
-            <h1>Mi Billetera</h1>
-            <a href="{{ url_for('landing') }}" style="color: #848e9c; text-decoration: none;">Cerrar x</a>
+
+    <div class="wallet-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; letter-spacing: 1px;">MI <span style="color: var(--neon-blue);">BILLETERA</span></h2>
+            <a href="{{ url_for('landing') }}" style="color: #848e9c; text-decoration: none; font-size: 1.5em;">&times;</a>
         </div>
 
-        <div class="balance-box">
-            <p style="color: #848e9c; margin: 0;">Balance Disponible</p>
-            <h2 style="font-size: 2.5em; margin: 10px 0;">{{ balance.free if balance is mapping else "1,250.00" }} <span style="font-size: 0.5em;">USDT</span></h2>
-            <p class="status">● Bot Activo - Generando beneficios proporcionales</p>
+        <div class="balance-card">
+            <p style="color: #848e9c; margin: 0; font-size: 0.9em;">Balance Disponible (USDT)</p>
+            <div class="balance-value">{{ balance.free }}</div>
+            <p style="color: var(--success); font-size: 0.75em; margin: 0;">● Fondos vinculados a Binance Feed</p>
         </div>
 
-        <div class="actions">
-            <div style="background: #1e2329; padding: 15px; border-radius: 8px;">
-                <h3>Cargar Saldo</h3>
-                <p style="font-size: 0.8em; color: #848e9c;">Mantén el mínimo de $20 semanales para operación continua.</p>
-                <button class="btn-action deposit" style="width: 100%;">Depositar vía Binance Pay</button>
-            </div>
-            
-            <div style="background: #1e2329; padding: 15px; border-radius: 8px;">
-                <h3>Retirar Fondos</h3>
-                <p style="font-size: 0.8em; color: #848e9c;">Sujeto a aprobación administrativa (24-48h).</p>
-                <button class="btn-action withdraw" style="width: 100%;">Solicitar Retiro</button>
-            </div>
+        <div style="margin: 25px 0;">
+            <h4 style="margin-bottom: 10px; color: #848e9c;">ACCIONES FINANCIERAS</h4>
+            <button class="btn-wallet btn-deposit" onclick="solicitarCarga()">
+                CARGAR SALDO ($20 SEMANAL)
+            </button>
+            <button class="btn-wallet btn-withdraw" onclick="solicitarRetiro()">
+                SOLICITAR RETIRO
+            </button>
         </div>
 
         <div style="margin-top: 30px;">
-            <h3>Últimos Movimientos</h3>
-            <table style="width: 100%; color: #848e9c; font-size: 0.9em;">
-                <tr style="border-bottom: 1px solid #2b2f36;">
-                    <td style="padding: 10px 0;">Comisión Bot (Semanual)</td>
-                    <td style="text-align: right; color: #cf304a;">-20.00 USDT</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px 0;">Ganancia Algoritmo Neura</td>
-                    <td style="text-align: right; color: #0ecb81;">+45.20 USDT</td>
-                </tr>
-            </table>
+            <h4 style="margin-bottom: 15px; color: #848e9c;">MOVIMIENTOS RECIENTES</h4>
+            <div class="history-item">
+                <span>Comisión Bot (Semanual)</span>
+                <span style="color: var(--danger);">-20.00 USDT</span>
+            </div>
+            <div class="history-item">
+                <span>Ganancia Algoritmo Neura</span>
+                <span style="color: var(--success);">+45.20 USDT</span>
+            </div>
+            <div class="history-item">
+                <span>Fee Transaccional</span>
+                <span style="color: var(--danger);">-0.50 USDT</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <p style="font-size: 0.7em; color: #474d57;">
+                Las solicitudes de retiro son procesadas en un máximo de 48h hábiles previa aprobación administrativa.
+            </p>
         </div>
     </div>
+
+    <script>
+        function solicitarCarga() {
+            alert("Instrucciones de Pago:\n1. Envía 20 USDT vía Binance Pay.\n2. Envía el comprobante al administrador.\n3. Tu bot se mantendrá activo por 7 días.");
+        }
+
+        function solicitarRetiro() {
+            let monto = prompt("Ingresa el monto a retirar:");
+            if (monto) {
+                alert("Solicitud de retiro por " + monto + " USDT enviada. El administrador revisará la operación.");
+            }
+        }
+    </script>
+
 </body>
 </html>
