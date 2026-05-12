@@ -2,48 +2,107 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Neura Trade - Inversión Algorítmica</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Trading | Neura Trade IA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        body { background-color: #0f172a; color: white; font-family: sans-serif; }
-        .login-card { background: #1e293b; padding: 2rem; border-radius: 1rem; border: 1px solid #334155; }
-        .text-primary { color: #3b82f6 !important; }
+        :root { --neon-blue: #00d2ff; --dark-bg: #0b0e11; --card-bg: #161a1e; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        .card-neura { background: var(--card-bg); border: 1px solid #2b2f36; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .balance-amount { font-size: 2.5em; color: var(--neon-blue); margin: 10px 0; font-weight: bold; }
+        .btn-neura { display: block; width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: var(--neon-blue); color: #0b0e11; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; transition: 0.3s; }
+        .btn-neura:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--neon-blue); }
+        .market-selector { width: 100%; background: #1e2329; color: var(--neon-blue); border: 1px solid #2b2f36; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .nav-links { display: flex; gap: 10px; margin-top: 20px; }
+        .nav-item { flex: 1; padding: 10px; background: #2b2f36; text-align: center; border-radius: 5px; color: #848e9c; text-decoration: none; font-size: 0.9em; }
+        .nav-item:hover { background: #3a3f47; color: white; }
     </style>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="row align-items-center" style="min-height: 80vh;">
-            <div class="col-md-7">
-                <h1 class="display-4 fw-bold">NEURA <span class="text-primary">TRADE</span></h1>
-                <p class="lead">Tecnología Tridox: Tu beneficio es nuestro beneficio.</p>
-                <hr class="my-4 border-secondary">
-                <h5>Misión</h5><p class="text-secondary small">Democratizar el trading algorítmico.</p>
-                <h5>Visión</h5><p class="text-secondary small">Liderar la automatización financiera global.</p>
-            </div>
-            <div class="col-md-5">
-                <div class="login-card">
-                    <h4 class="mb-4">Acceso Inversionistas</h4>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                      {% if messages %}
-                        {% for category, message in messages %}
-                          <div class="alert alert-{{ category }} small">{{ message }}</div>
-                        {% endfor %}
-                      {% endif %}
-                    {% endwith %}
-                    <form action="/login" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label small">Usuario</label>
-                            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small">Contraseña</label>
-                            <input type="password" name="password" class="form-control bg-dark text-white border-secondary" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">ENTRAR</button>
-                    </form>
+
+    <header style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="margin: 0; letter-spacing: 2px;">NEURA <span style="color: var(--neon-blue);">TRADE IA</span></h1>
+            <p style="margin: 0; color: #848e9c; font-size: 0.8em;">SISTEMA DE GESTIÓN FINANCIERA PROFESIONAL</p>
+        </div>
+        <div style="text-align: right;">
+            <span style="color: #0ecb81;">● SISTEMA LIVE</span><br>
+            <a href="{{ url_for('logout') }}" style="color: #f6465d; text-decoration: none; font-size: 0.8em;">Cerrar Sesión Segura</a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- COLUMNA IZQUIERDA: CONTROL FINANCIERO -->
+        <aside>
+            <div class="card-neura">
+                <p style="color: #848e9c; margin: 0;">BALANCE NEURA TRADE</p>
+                <div class="balance-amount">${{ balance.free }}</div>
+                <p style="color: #0ecb81; font-size: 0.9em; margin-bottom: 20px;">Modo: Algoritmo de Alta Frecuencia</p>
+                
+                <hr style="border: 0.5px solid #2b2f36; margin: 20px 0;">
+
+                <p style="color: #848e9c; font-size: 0.8em; margin-bottom: 5px;">MERCADO DE OPERACIÓN</p>
+                <!-- Selector dinámico que recarga la página con el mercado elegido -->
+                <select class="market-selector" onchange="location = this.value;">
+                    <option value="/landing?mercado=BTCUSDT" {% if balance.mercado == 'BTCUSDT' %}selected{% endif %}>Bitcoin (BTC/USDT)</option>
+                    <option value="/landing?mercado=ETHUSDT" {% if balance.mercado == 'ETHUSDT' %}selected{% endif %}>Ethereum (ETH/USDT)</option>
+                    <option value="/landing?mercado=SOLUSDT" {% if balance.mercado == 'SOLUSDT' %}selected{% endif %}>Solana (SOL/USDT)</option>
+                </select>
+
+                <div style="margin-top: 30px;">
+                    <a href="{{ url_for('billetera') }}" class="btn-neura">GESTIONAR BILLETERA</a>
+                    <div class="nav-links">
+                        <a href="{{ url_for('perfil') }}" class="nav-item">MI PERFIL</a>
+                        <a href="#" class="nav-item" onclick="alert('Historial de operaciones cargando...')">HISTORIAL</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </aside>
+
+        <!-- COLUMNA DERECHA: GRÁFICO Y TRADING -->
+        <main>
+            <div class="card-neura" style="height: 500px; padding: 10px;">
+                <!-- Widget de TradingView dinámico según el mercado elegido -->
+                <div id="tradingview_widget" style="height: 100%;"></div>
+                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                <script type="text/javascript">
+                new TradingView.widget({
+                    "autosize": true,
+                    "symbol": "BINANCE:{{ balance.mercado }}",
+                    "interval": "5",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "es",
+                    "toolbar_bg": "#f1f3f6",
+                    "enable_publishing": false,
+                    "hide_side_toolbar": false,
+                    "allow_symbol_change": true,
+                    "container_id": "tradingview_widget"
+                });
+                </script>
+            </div>
+
+            <div class="card-neura" style="margin-top: 20px;">
+                <h3>REGISTRO DE OPERACIONES NEURA</h3>
+                <table style="width: 100%; border-collapse: collapse; color: #848e9c; font-size: 0.9em;">
+                    <tr style="border-bottom: 1px solid #2b2f36; text-align: left;">
+                        <th style="padding: 10px;">ID</th>
+                        <th>PAR</th>
+                        <th>HORA</th>
+                        <th style="text-align: right;">PROFIT (%)</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">#NT2026</td>
+                        <td>{{ balance.mercado }}</td>
+                        <td>{{ balance.hora if balance.hora else "Sincronizando..." }}</td>
+                        <td style="text-align: right; color: #0ecb81;">+0.85%</td>
+                    </tr>
+                </table>
+            </div>
+        </main>
     </div>
+
 </body>
 </html>
