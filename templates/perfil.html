@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil | Neura Trade IA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Usa tu CSS existente -->
+    <style>
+        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', sans-serif; }
+        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #161a1e; border-radius: 10px; border: 1px solid #2b2f36; }
+        .btn-danger { background: #cf304a; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; width: 100%; }
+        .info-group { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #2b2f36; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00d2ff; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Configuración de Perfil</h2>
+            <a href="{{ url_for('landing') }}" style="color: #00d2ff; text-decoration: none;">Volver al Panel</a>
+        </div>
+        
+        <div class="info-group">
+            <p><strong>Usuario:</strong> admin</p>
+            <p><strong>ID de Cuenta:</strong> NT-2026-001</p>
+            <p><strong>Estado:</strong> Verificado</p>
+        </div>
+
+        <div class="info-group">
+            <label>Editar Correo Electrónico:</label><br>
+            <input type="email" value="admin@neuratrade.com" style="width: 100%; background: #0b0e11; color: white; border: 1px solid #474d57; padding: 8px; margin-top: 5px;">
+        </div>
+
+        <button class="btn-danger" onclick="alert('Solicitud de eliminación enviada a soporte.')">Eliminar Cuenta</button>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{{ url_for('logout') }}" style="color: #848e9c;">Cerrar Sesión Segura</a>
+        </div>
+    </div>
+</body>
+</html>
