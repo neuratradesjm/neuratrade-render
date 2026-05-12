@@ -2,39 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil | Neura Trade IA</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <!-- Usa tu CSS existente -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario | Neura Trade IA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', sans-serif; }
-        .container { max-width: 600px; margin: 50px auto; padding: 20px; background: #161a1e; border-radius: 10px; border: 1px solid #2b2f36; }
-        .btn-danger { background: #cf304a; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; width: 100%; }
-        .info-group { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #2b2f36; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00d2ff; padding-bottom: 10px; }
+        :root { --neon-blue: #00d2ff; --dark-bg: #0b0e11; --card-bg: #161a1e; --success: #0ecb81; }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .profile-card { width: 100%; max-width: 500px; background: var(--card-bg); border-radius: 20px; border: 1px solid #2b2f36; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); text-align: center; }
+        .avatar-circle { width: 80px; height: 80px; background: #2b2f36; border-radius: 50%; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; border: 2px solid var(--neon-blue); font-size: 2em; color: var(--neon-blue); }
+        .user-info { text-align: left; background: #1e2329; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--neon-blue); }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #2b2f36; padding-bottom: 8px; }
+        .info-label { color: #848e9c; font-size: 0.9em; }
+        .status-active { color: var(--success); font-weight: bold; }
+        .btn-logout { display: inline-block; padding: 12px 30px; background: #f6465d; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s; margin-top: 10px; }
+        .btn-logout:hover { background: #ff5e71; box-shadow: 0 0 15px #f6465d; }
+        .back-link { display: block; margin-top: 25px; color: #848e9c; text-decoration: none; font-size: 0.9em; }
+        .back-link:hover { color: var(--neon-blue); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Configuración de Perfil</h2>
-            <a href="{{ url_for('landing') }}" style="color: #00d2ff; text-decoration: none;">Volver al Panel</a>
-        </div>
-        
-        <div class="info-group">
-            <p><strong>Usuario:</strong> admin</p>
-            <p><strong>ID de Cuenta:</strong> NT-2026-001</p>
-            <p><strong>Estado:</strong> Verificado</p>
+
+    <div class="profile-card">
+        <div class="avatar-circle">A</div>
+        <h2 style="margin-bottom: 5px;">Panel de Usuario</h2>
+        <p style="color: #848e9c; font-size: 0.9em; margin-top: 0;">ID de Cliente: NT-2026-001</p>
+
+        <div class="user-info">
+            <div class="info-row">
+                <span class="info-label">Usuario</span>
+                <span>admin</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Estado de Cuenta</span>
+                <span class="status-active">ACTIVA</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Membresía Bot</span>
+                <span>Premium Semanal</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">País</span>
+                <span>Venezuela</span>
+            </div>
         </div>
 
-        <div class="info-group">
-            <label>Editar Correo Electrónico:</label><br>
-            <input type="email" value="admin@neuratrade.com" style="width: 100%; background: #0b0e11; color: white; border: 1px solid #474d57; padding: 8px; margin-top: 5px;">
+        <div style="background: rgba(0, 210, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+            <p style="font-size: 0.85em; color: var(--neon-blue); margin: 0;">
+                Recuerda que tu membresía vence cada 7 días. Asegúrate de tener saldo en tu billetera para evitar pausas en el algoritmo.
+            </p>
         </div>
 
-        <button class="btn-danger" onclick="alert('Solicitud de eliminación enviada a soporte.')">Eliminar Cuenta</button>
+        <a href="{{ url_for('logout') }}" class="btn-logout">CERRAR SESIÓN SEGURA</a>
         
-        <div style="margin-top: 20px; text-align: center;">
-            <a href="{{ url_for('logout') }}" style="color: #848e9c;">Cerrar Sesión Segura</a>
-        </div>
+        <a href="{{ url_for('landing') }}" class="back-link">← Volver al Panel de Trading</a>
     </div>
+
 </body>
 </html>
