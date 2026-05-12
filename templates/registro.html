@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Neura Trade - Registro de Cliente</title>
+    <style>
+        body { background: #0d1117; color: white; font-family: sans-serif; padding: 50px; }
+        .reg-container { background: #161b22; padding: 40px; border-radius: 15px; border: 1px solid #30363d; max-width: 600px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #8b949e; }
+        input, select { width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 5px; box-sizing: border-box; }
+        .section-title { border-bottom: 1px solid #30363d; padding-bottom: 10px; margin: 25px 0 15px; color: #58a6ff; }
+        .btn-reg { width: 100%; padding: 15px; background: #238636; border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="reg-container">
+        <h2 style="text-align: center;">Formulario de Registro Neura Trade</h2>
+        <form action="/registro" method="POST">
+            
+            <div class="section-title">Datos Personales</div>
+            <div class="grid">
+                <div><label>Nombres</label><input type="text" name="nombres" required></div>
+                <div><label>Apellidos</label><input type="text" name="apellidos" required></div>
+            </div>
+            
+            <div class="grid" style="margin-top: 15px;">
+                <div><label>Nacionalidad</label><input type="text" name="nacionalidad" required></div>
+                <div>
+                    <label>Tipo de Documento</label>
+                    <select name="tipo_doc">
+                        <option value="cedula">Cédula de Identidad</option>
+                        <option value="pasaporte">Pasaporte</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 15px;"><label>Número de Documento</label><input type="text" name="documento" required></div>
+
+            <div class="section-title">Validación de Pagos (TXID / Hash)</div>
+            <div class="grid">
+                <div><label>Pago Activación Bot</label><input type="text" name="pago_bot" placeholder="TXID de $20" required></div>
+                <div><label>Depósito Broker</label><input type="text" name="pago_broker" placeholder="TXID depósito inicial" required></div>
+            </div>
+
+            <div class="section-title">Seguridad</div>
+            <div class="grid">
+                <div><label>Usuario Deseado</label><input type="text" name="usuario_nuevo" required></div>
+                <div><label>Contraseña</label><input type="password" name="clave_nueva" required></div>
+            </div>
+
+            <div style="margin-top: 20px; background: #0d1117; padding: 15px; border-radius: 5px; border: 1px solid #30363d; text-align: center;">
+                <input type="checkbox" required style="width: auto;"> No soy un robot (Captcha de Seguridad)
+            </div>
+
+            <button type="submit" class="btn-reg">ENVIAR REGISTRO PARA VALIDACIÓN</button>
+        </form>
+    </div>
+</body>
+</html>
