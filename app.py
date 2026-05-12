@@ -4,7 +4,7 @@ from functools import wraps
 
 # Configuración de la aplicación respetando tu estructura de carpetas
 app = Flask(__name__, template_folder='templates', static_folder='static')
-app.secret_key = 'neura_trade_ultra_secure_key_2026' # Llave maestra de sesión
+app.secret_key = 'neura_trade_key_2026' # ESTA LÍNEA ES VITAL
 
 # --- CONFIGURACIÓN DE BINANCE (NEURA TRADE / ANTES TRIDOX) ---
 # Se mantienen tus credenciales operativas
@@ -16,17 +16,17 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'logged_in' not in session:
-            # Si no hay sesión, expulsa al usuario al login
-            return redirect(url_for('pre_inicio'))
+            return redirect(url_for('inicio_sesion'))
         return f(*args, **kwargs)
     return decorated_function
 
 # --- CEREBRO DEL BOT: TRADER ELITE MULTI-MERCADO ---
 def ejecutar_bot_maestro(simbolo="BTCUSDT"):
-    """
-    Mantiene la lógica de profit proporcional y comisiones.
-    Ahora acepta diferentes símbolos (BTC, ETH, SOL).
-    """
+    try:
+        from binance.client import Client
+        # Aquí van tus API KEYS que ya tienes funcionando
+        client = Client(API_KEY, API_SECRET)
+        # ... resto de la lógica de balance ...
     try:
         from binance.client import Client
         client = Client(API_KEY, API_SECRET)
