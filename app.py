@@ -10,6 +10,21 @@ app.secret_key = 'neura_trade_production_key_2026' # Seguridad nivel broker
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
 API_SECRET = 'DiGvPZkwDgq2kvhs21JtjxkMw2wrn2jftheE3g3vvNoqrhw20jtEcno99RQ8Xv86u'
 
+from flask_sqlalchemy import SQLAlchemy
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///neura_trade.db'
+db = SQLAlchemy(app)
+
+class Usuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    rol = db.Column(db.String(20), default='user') # 'admin' o 'user'
+    balance = db.Column(db.Float, default=1250.0)
+    telefono = db.Column(db.String(20), default='+584124407893')
+
+with app.app_context():
+    db.create_all()
 # --- MOTOR DE TRADING REAL (NEURA TRADE BOT) ---
 def get_bot_engine(symbol="BTCUSDT"):
     """Conexión real con el mercado para ejecución de bot en línea."""
