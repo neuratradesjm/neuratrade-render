@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Billetera | Neura Trade</title>
+    <style>
+        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', sans-serif; }
+        .wallet-card { max-width: 800px; margin: 50px auto; background: #161a1e; border-radius: 15px; padding: 30px; border: 1px solid #00d2ff; }
+        .balance-box { background: #1e2329; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn-action { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .deposit { background: #00d2ff; color: #0b0e11; }
+        .withdraw { background: #2b2f36; color: white; border: 1px solid #474d57; }
+        .status { color: #0ecb81; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="wallet-card">
+        <div style="display: flex; justify-content: space-between;">
+            <h1>Mi Billetera</h1>
+            <a href="{{ url_for('landing') }}" style="color: #848e9c; text-decoration: none;">Cerrar x</a>
+        </div>
+
+        <div class="balance-box">
+            <p style="color: #848e9c; margin: 0;">Balance Disponible</p>
+            <h2 style="font-size: 2.5em; margin: 10px 0;">{{ balance.free if balance is mapping else "1,250.00" }} <span style="font-size: 0.5em;">USDT</span></h2>
+            <p class="status">● Bot Activo - Generando beneficios proporcionales</p>
+        </div>
+
+        <div class="actions">
+            <div style="background: #1e2329; padding: 15px; border-radius: 8px;">
+                <h3>Cargar Saldo</h3>
+                <p style="font-size: 0.8em; color: #848e9c;">Mantén el mínimo de $20 semanales para operación continua.</p>
+                <button class="btn-action deposit" style="width: 100%;">Depositar vía Binance Pay</button>
+            </div>
+            
+            <div style="background: #1e2329; padding: 15px; border-radius: 8px;">
+                <h3>Retirar Fondos</h3>
+                <p style="font-size: 0.8em; color: #848e9c;">Sujeto a aprobación administrativa (24-48h).</p>
+                <button class="btn-action withdraw" style="width: 100%;">Solicitar Retiro</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3>Últimos Movimientos</h3>
+            <table style="width: 100%; color: #848e9c; font-size: 0.9em;">
+                <tr style="border-bottom: 1px solid #2b2f36;">
+                    <td style="padding: 10px 0;">Comisión Bot (Semanual)</td>
+                    <td style="text-align: right; color: #cf304a;">-20.00 USDT</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 0;">Ganancia Algoritmo Neura</td>
+                    <td style="text-align: right; color: #0ecb81;">+45.20 USDT</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
