@@ -14,8 +14,8 @@ PORCENTAJE_GANANCIA_ADMIN = 0.20
 
 # --- PASO 3: TUS LLAVES DE BINANCE ---
 # Pega aquí los códigos que saques de Binance
-API_KEY = 'TU_API_KEY_AQUI'
-API_SECRET = 'TU_API_SECRET_AQUI'
+API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7Tohn0G5dMBaiZQ7lqRPgmJ9O4XqUFwgK'
+API_SECRET = 'DiGvPZkwDgq2kvhs2lJtjxkMw2wrn2jfthE3g3vvNoqrhw2OjtEcno99RQ8Xv86u'
 
 # Intentar conectar con Binance
 try:
