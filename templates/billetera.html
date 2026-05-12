@@ -30,6 +30,7 @@
             <div style="margin-top: 20px; padding: 15px; background: rgba(56, 185, 80, 0.1); border: 1px solid #3fb950; border-radius: 5px;">
                 <p style="margin: 0;">Estado: <strong style="color: #3fb950;">{{ datos.estado }}</strong></p>
                 <p style="margin: 10px 0 0 0;">Precio {{ datos.mercado }}: <strong>${{ datos.precio_actual }}</strong></p>
+                <p style="margin: 10px 0 0 0;">Señal actual: <span style="color: #58a6ff;">{{ datos.señal }}</span></p>
             </div>
         </div>
 
@@ -42,6 +43,39 @@
                 <button style="padding: 12px 20px; background: #8957e5; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold;">Retirar Ganancias</button>
             </div>
         </div>
+    </div>
+
+    <!-- Bloque de Historial de Operaciones (Nueva Mejora) -->
+    <div style="margin-top: 25px; background: #161b22; padding: 25px; border-radius: 10px; border: 1px solid #30363d;">
+        <h3 style="margin-bottom: 20px;">Últimas Operaciones del Bot</h3>
+        <table style="width: 100%; border-collapse: collapse; color: #c9d1d9; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid #30363d; color: #8b949e;">
+                    <th style="padding: 12px;">Fecha/Hora</th>
+                    <th style="padding: 12px;">Par</th>
+                    <th style="padding: 12px;">Tipo</th>
+                    <th style="padding: 12px;">Precio</th>
+                    <th style="padding: 12px;">Profit</th>
+                    <th style="padding: 12px;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for op in historial %}
+                <tr style="border-bottom: 1px solid #21262d;">
+                    <td style="padding: 12px;">{{ op.fecha }}</td>
+                    <td style="padding: 12px;">{{ op.par }}</td>
+                    <td style="padding: 12px;">
+                        <span style="padding: 4px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; background: {% if op.tipo == 'COMPRA' %}#1f6feb{% else %}#d29922{% endif %}; color: white;">
+                            {{ op.tipo }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">${{ op.precio }}</td>
+                    <td style="padding: 12px; color: #3fb950; font-weight: bold;">{{ op.profit }}</td>
+                    <td style="padding: 12px; color: #58a6ff;">{{ op.estado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
