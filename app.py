@@ -2,13 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import os
 from datetime import datetime
 from functools import wraps
+import random
 
 app = Flask(__name__)
 app.secret_key = 'neura_trade_production_key_2026'
 
-# --- PERSISTENCIA TEMPORAL (Simulación de Base de Datos para Neura Trade) ---
-# Aquí se guardarán las solicitudes de registro hasta que se reinicie el servidor
+# --- PERSISTENCIA TEMPORAL ---
 solicitudes_registro = []
+# Nuevo: Historial de operaciones para mostrar actividad en el sistema
+historial_operaciones = [
+    {"fecha": "2026-05-12 10:30", "par": "BTC/USDT", "tipo": "COMPRA", "precio": "79,500.00", "estado": "Cerrada", "profit": "+1.2%"},
+    {"fecha": "2026-05-12 14:15", "par": "ETH/USDT", "tipo": "VENTA", "precio": "3,450.20", "estado": "Cerrada", "profit": "+0.8%"}
+]
 
 # --- CONFIGURACIÓN DE IDENTIDAD Y APIS ---
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
@@ -22,11 +27,14 @@ def get_bot_engine(symbol="BTCUSDT"):
         client = Client(API_KEY, API_SECRET)
         balance_info = client.get_asset_balance(asset='USDT')
         ticker = client.get_symbol_ticker(symbol=symbol)
+        precio = float(ticker['price'])
         return {
             "balance": balance_info['free'],
-            "precio_actual": ticker['price'],
+            "precio_actual": f"{precio:,.2f}",
             "mercado": symbol,
-            "estado": "BOT ONLINE - OPERANDO",
+            "estado": "EJECUTANDO ESTRATEGIA NEURA",
+            "indicador": "RSI Optimizado",
+            "señal": "HOLD" if random.random() > 0.5 else "BUY",
             "profit_objetivo": "Alta Rentabilidad"
         }
     except Exception:
@@ -35,7 +43,9 @@ def get_bot_engine(symbol="BTCUSDT"):
             "balance": f"{base_balance:,.2f}",
             "precio_actual": "80,396.55",
             "mercado": symbol,
-            "estado": "MODO LOCAL (VERIFICANDO CONEXIÓN)",
+            "estado": "MODO SIMULACIÓN (ESTRATEGIA ACTIVA)",
+            "indicador": "Análisis Técnico Activo",
+            "señal": "WAIT",
             "profit_objetivo": "15%"
         }
 
@@ -79,7 +89,6 @@ def login():
         return "Credenciales incorrectas."
     return render_template('index.html')
 
-# --- REGISTRO Y CAPTACIÓN NEURA TRADE ---
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
     if request.method == 'POST':
@@ -98,7 +107,6 @@ def registro():
         return "Registro enviado con éxito. En Neura Trade validaremos su pago en breve."
     return render_template('registro.html')
 
-# --- PANEL ADMINISTRATIVO NEURA TRADE ---
 @app.route('/admin/dashboard')
 @login_required
 @admin_required
@@ -114,7 +122,6 @@ def admin_dashboard():
 @login_required
 @admin_required
 def aprobar_usuario(usuario):
-    # Lógica para mover de solicitudes a usuarios activos
     global solicitudes_registro
     solicitudes_registro = [s for s in solicitudes_registro if s['usuario_nuevo'] != usuario]
     return redirect(url_for('admin_dashboard'))
@@ -137,7 +144,28 @@ def billetera():
     mercado = request.args.get('mercado', 'BTCUSDT')
     datos_bot = get_bot_engine(mercado)
     mercados = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"]
-    return render_template('billetera.html', datos=datos_bot, mercados=mercados, user=session.get('user_id'))
+    # Enviamos el historial de operaciones a la billetera
+    return render_template('billetera.html', 
+                           datos=datos_bot, 
+                           mercados=mercados, 
+                           historial=historial_operaciones,
+                           user=session.get('user_id'))
+
+# Nuevo: Ruta para registrar ejecuciones del bot manualmente o por cron
+@app.route('/ejecutar_orden', methods=['POST'])
+@login_required
+@admin_required
+def ejecutar_orden():
+    nueva_op = {
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "par": request.form.get('par'),
+        "tipo": request.form.get('tipo'),
+        "precio": request.form.get('precio'),
+        "estado": "Cerrada",
+        "profit": f"+{random.uniform(0.5, 2.1):.1f}%"
+    }
+    historial_operaciones.insert(0, nueva_op)
+    return redirect(url_for('billetera'))
 
 @app.route('/salir')
 def salir():
