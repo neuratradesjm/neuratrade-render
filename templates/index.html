@@ -19,82 +19,64 @@
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            scroll-behavior: smooth;
         }
-        
-        /* Navegación */
+        /* Navegación Simple */
         nav {
-            padding: 15px 10%;
+            padding: 20px 10%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            background: rgba(13, 17, 23, 0.95);
+            background: rgba(13, 17, 23, 0.9);
             z-index: 1000;
         }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-        .logo-img {
-            width: 40px; /* Tamaño adaptado para que no sea muy grande */
-            height: 40px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .logo-text {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: white;
-            letter-spacing: 1px;
-        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); text-decoration: none; }
         
         /* Hero Section */
         .hero {
-            padding: 100px 10% 80px;
+            padding: 100px 10% 60px;
             text-align: center;
-            background: radial-gradient(circle at top, #1c2128 0%, #0d1117 100%);
+            background: radial-gradient(circle at top, #161b22 0%, #0d1117 100%);
         }
-        .hero h1 { font-size: 3.2rem; color: white; margin-bottom: 20px; }
-        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto 35px; color: #8b949e; }
+        .hero h1 { font-size: 3rem; color: white; margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px; color: #8b949e; }
         .cta-button {
             background: var(--secondary);
             color: white;
-            padding: 16px 32px;
+            padding: 15px 30px;
             border-radius: 6px;
             text-decoration: none;
             font-weight: bold;
             transition: 0.3s;
-            display: inline-block;
         }
-        .cta-button:hover { background: #2ea043; transform: translateY(-2px); }
+        .cta-button:hover { opacity: 0.9; transform: translateY(-2px); }
 
         /* Características */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            padding: 80px 10%;
+            padding: 60px 10%;
         }
         .feature-card {
             background: var(--card);
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            text-align: center;
+            transition: 0.3s;
         }
-        .feature-card h3 { color: var(--primary); font-size: 1.5rem; }
+        .feature-card:hover { border-color: var(--primary); }
+        .feature-card h3 { color: var(--primary); margin-top: 0; }
 
-        /* Login Section */
+        /* Sección de Login (Raíz del Sistema) */
         .login-section {
             padding: 100px 10%;
             background: #090c10;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
         .login-container {
             background: var(--card);
@@ -103,16 +85,10 @@
             border: 1px solid var(--border);
             width: 100%;
             max-width: 400px;
-            text-align: center;
         }
-        .login-logo {
-            width: 80px; /* Un poco más grande para el login */
-            margin-bottom: 20px;
-            border-radius: 12px;
-        }
-        .login-container h2 { margin-bottom: 30px; color: white; }
-        .input-group { text-align: left; margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #8b949e; }
+        .login-container h2 { text-align: center; margin-bottom: 30px; color: white; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; }
         .input-group input {
             width: 100%;
             padding: 12px;
@@ -124,7 +100,7 @@
         }
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: var(--secondary);
             border: none;
             color: white;
@@ -132,13 +108,14 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 1rem;
-            margin-top: 10px;
         }
 
+        /* Footer */
         footer {
-            padding: 50px 10%;
+            padding: 40px 10%;
             border-top: 1px solid var(--border);
             text-align: center;
+            font-size: 0.9rem;
             color: #8b949e;
         }
     </style>
@@ -146,54 +123,55 @@
 <body>
 
     <nav>
-        <a href="#" class="logo-container">
-            <img src="{{ url_for('static', filename='neura_logo.jpeg') }}" alt="Logo" class="logo-img">
-            <span class="logo-text">NEURA TRADE</span>
-        </a>
-        <a href="#login" style="color: var(--primary); text-decoration: none; font-weight: 500;">Acceso Terminal</a>
+        <a href="#" class="logo">NEURA TRADE</a>
+        <a href="#login" style="color: white; text-decoration: none; font-size: 0.9rem;">Acceso Terminal</a>
     </nav>
 
     <header class="hero">
-        <h1>Trading Inteligente para el Mundo Real</h1>
-        <p>Potenciamos tus inversiones mediante algoritmos de alta precisión conectados a Binance v3. Rentabilidad transparente, segura y profesional.</p>
-        <a href="#login" class="cta-button">Empezar Ahora</a>
+        <h1>Maximiza tu Rentabilidad con IA</h1>
+        <p>Neura Trade es un ecosistema de trading algorítmico conectado directamente a Binance v3. Operaciones precisas, gestión de riesgo profesional y transparencia total.</p>
+        <a href="#login" class="cta-button">Comenzar a Operar</a>
     </header>
 
     <section class="features">
         <div class="feature-card">
-            <h3>Conector Binance</h3>
-            <p>Operativa directa en el mercado Spot y Futuros con latencia mínima.</p>
+            <h3>Conexión Real</h3>
+            <p>Integración nativa con la API de Binance para ejecuciones en milisegundos sin intermediarios innecesarios.</p>
         </div>
         <div class="feature-card">
-            <h3>IA de Precisión</h3>
-            <p>Modelos entrenados para identificar tendencias antes de que ocurran.</p>
+            <h3>Algoritmos Propios</h3>
+            <p>Nuestro bot analiza patrones de mercado 24/7 para identificar oportunidades de alta probabilidad.</p>
         </div>
         <div class="feature-card">
-            <h3>Gestión Segura</h3>
-            <p>Tu capital está protegido con los más altos estándares de cifrado.</p>
+            <h3>Beneficio Mutuo</h3>
+            <p>Nuestra rentabilidad está ligada a la tuya. Diseñamos el sistema para que cada operación cuente.</p>
         </div>
     </section>
 
+    <!-- RAÍZ DEL SISTEMA: LOGIN -->
     <section class="login-section" id="login">
         <div class="login-container">
-            <img src="{{ url_for('static', filename='neura_logo.jpeg') }}" alt="Logo" class="login-logo">
-            <h2>Ingreso al Sistema</h2>
+            <h2>Terminal de Acceso</h2>
             <form action="/login" method="POST">
                 <div class="input-group">
-                    <label>Usuario</label>
+                    <label>Usuario o Correo</label>
                     <input type="text" name="usuario" required placeholder="admin o cliente">
                 </div>
                 <div class="input-group">
-                    <label>Contraseña de Seguridad</label>
+                    <label>Contraseña</label>
                     <input type="password" name="clave" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn-login">ACCEDER AHORA</button>
+                <button type="submit" class="btn-login">ACCEDER AL SISTEMA</button>
             </form>
+            <p style="font-size: 0.8rem; text-align: center; margin-top: 20px; color: #8b949e;">
+                Conectado a Binance API v3 | Sistema Real de Gestión
+            </p>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2026 Neura Trade - Tecnología Financiera Avanzada</p>
+        <p>&copy; 2026 Neura Trade - Todos los derechos reservados.</p>
+        <p style="font-size: 0.7rem;">Operar en criptomonedas conlleva riesgos. Gestiona tu capital con responsabilidad.</p>
     </footer>
 
 </body>
