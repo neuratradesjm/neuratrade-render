@@ -4,12 +4,12 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'neura_trade_production_key_2026' #
+app.secret_key = 'neura_trade_production_key_2026' 
 
 # --- CONFIGURACIÓN DE IDENTIDAD Y APIS ---
 API_KEY = 'dM68NGgZsh4dXCMMiLO3sbnoFJww3cL7TohnOG5dMBaiZQ7lqRPgmJ904XqUFwgK'
 API_SECRET = 'DiGvPZkwDgq2kvhs21JtjxkMw2wrn2jftheE3g3vvNoqrhw20jtEcno99RQ8Xv86u'
-DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI" # Reemplazar con tu dirección real
+DIRECCION_USDT = "TU_BILLETERA_TRC20_AQUI" 
 
 # --- MOTOR DE TRADING REAL (NEURA TRADE BOT) ---
 def get_bot_engine(symbol="BTCUSDT"):
@@ -26,7 +26,6 @@ def get_bot_engine(symbol="BTCUSDT"):
             "profit_objetivo": "Alta Rentabilidad"
         }
     except Exception:
-        # Balance simulado que se incrementará con depósitos
         base_balance = session.get('user_balance', 1250.00)
         return {
             "balance": f"{base_balance:,.2f}",
@@ -53,7 +52,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# --- RUTAS ---
+# --- RUTAS DE NAVEGACIÓN ---
 
 @app.route('/')
 def home():
@@ -66,24 +65,36 @@ def login():
     if request.method == 'POST':
         user = request.form.get('usuario').strip()
         pw = request.form.get('clave').strip()
-        
         if user == 'admin' and pw == 'admin1234':
             session['logged_in'] = True
             session['user_id'] = user
             session['role'] = 'admin'
             return redirect(url_for('admin_dashboard'))
-            
         elif user == 'cliente' and pw == 'cliente1234':
             session['logged_in'] = True
             session['user_id'] = user
             session['role'] = 'user'
-            if 'user_balance' not in session:
-                session['user_balance'] = 1250.00
+            if 'user_balance' not in session: session['user_balance'] = 1250.00
             return redirect(url_for('billetera'))
-            
         return "Credenciales incorrectas."
     return render_template('index.html')
 
+# --- TAREA 3: GESTIÓN DE AGENDA AUTOMATIZADA ---
+@app.route('/agenda')
+@login_required
+@admin_required
+def agenda():
+    """Planificación operativa para Luis García Salas."""
+    agenda_datos = [
+        {"hora": "08:00 AM", "tarea": "Enviar resumen de agenda a WhatsApp +584124407893", "estado": "Pendiente"},
+        {"hora": "08:05 AM", "tarea": "Enviar correo diario a luisfgarsa@gmail.com", "estado": "Pendiente"},
+        {"hora": "10:00 AM", "tarea": "Auditoría de operaciones Neura Trade en Binance", "estado": "Programado"},
+        {"hora": "02:00 PM", "tarea": "Revisión de nuevos depósitos de $20 USDT", "estado": "Programado"},
+        {"hora": "08:00 PM", "tarea": "Cierre de profit diario y respaldo en Keep", "estado": "Pendiente"}
+    ]
+    return render_template('agenda.html', tareas=agenda_datos)
+
+# --- RUTAS FINANCIERAS Y BOT ---
 @app.route('/billetera')
 @login_required
 def billetera():
@@ -95,31 +106,23 @@ def billetera():
 @app.route('/depositar')
 @login_required
 def depositar():
-    """Módulo de Pasarela de Pago."""
     return render_template('depositar.html', direccion=DIRECCION_USDT)
 
 @app.route('/confirmar_pago', methods=['POST'])
 @login_required
 def confirmar_pago():
-    """Verificación manual/simulada del depósito de $20."""
     monto = float(request.form.get('monto', 0))
     txid = request.form.get('txid')
-    
     if monto >= 20 and txid:
-        # En una fase real, aquí se validaría el TXID contra la Blockchain
         session['user_balance'] = session.get('user_balance', 0) + monto
         return redirect(url_for('billetera'))
-    return "Error en la validación del depósito. Mínimo $20 USDT."
+    return "Error: Depósito mínimo $20 USDT requerido."
 
 @app.route('/admin/dashboard')
 @login_required
 @admin_required
 def admin_dashboard():
-    stats = {
-        "usuarios_activos": 124,
-        "volumen_24h": "45,230.00 USDT",
-        "comisiones_totales": "1,240.50 USDT"
-    }
+    stats = {"usuarios_activos": 124, "volumen_24h": "45,230.00 USDT", "comisiones_totales": "1,240.50 USDT"}
     return render_template('dashboard.html', stats=stats)
 
 @app.route('/salir')
