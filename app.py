@@ -103,3 +103,26 @@ if __name__ == '__main__':
     # Configuración de puerto para el despliegue en Render
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+    # ... (Aquí están todas tus rutas anteriores como @app.route('/') y @app.route('/billetera'))
+
+# --- INSERTA EL CÓDIGO AQUÍ (AL FINAL) ---
+
+@app.route('/salir')
+def salir():
+    session.clear()
+    return redirect(url_for('home'))
+
+@app.route('/login', methods=['POST'])
+def login_auth():
+    usuario = request.form.get('usuario')
+    clave = request.form.get('clave')
+    # Estas son las credenciales para tu Mega Proyecto
+    if usuario == 'admin' and clave == 'admin1234':
+        session['logged_in'] = True
+        # Esto te lleva directo al selector de mercados y billetera
+        return redirect(url_for('billetera'))
+    return "Credenciales incorrectas"
+
+# --- ASEGÚRATE DE QUE ESTO SEA LO ÚLTIMO EN EL ARCHIVO ---
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=10000)
